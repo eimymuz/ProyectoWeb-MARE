@@ -53,7 +53,11 @@ function Reserve({ onClose }) {
         return
       }
 
-      setSuccess(data.solicitud)
+      setSuccess({
+        id: data.solicitud_id,
+        email: form.email
+      })
+
       setLoading(false)
     } catch {
       setError('Error de conexión con el servidor')
@@ -81,10 +85,13 @@ function Reserve({ onClose }) {
             <div className="popup-body">
               <div className="success-box">
                 <div className="success-icon">✓</div>
+
                 <h3>¡Solicitud enviada!</h3>
+
                 <p>
                   Hemos recibido su solicitud. Le contactaremos al correo:
                 </p>
+
                 <strong>{success.email}</strong>
 
                 <div className="success-num">
@@ -96,7 +103,7 @@ function Reserve({ onClose }) {
             </div>
 
             <div className="popup-footer">
-              <button className="btn-submit" onClick={onClose}>
+              <button type="button" className="btn-submit" onClick={onClose}>
                 Cerrar
               </button>
             </div>
@@ -115,7 +122,9 @@ function Reserve({ onClose }) {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Nombre completo <span className="required">*</span></label>
+                  <label>
+                    Nombre completo <span className="required">*</span>
+                  </label>
                   <input
                     name="fullname"
                     value={form.fullname}
@@ -127,7 +136,9 @@ function Reserve({ onClose }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Teléfono <span className="required">*</span></label>
+                  <label>
+                    Teléfono <span className="required">*</span>
+                  </label>
                   <input
                     name="telefono"
                     value={form.telefono}
@@ -140,7 +151,9 @@ function Reserve({ onClose }) {
               </div>
 
               <div className="form-group">
-                <label>Correo electrónico <span className="required">*</span></label>
+                <label>
+                  Correo electrónico <span className="required">*</span>
+                </label>
                 <input
                   name="email"
                   value={form.email}
@@ -156,7 +169,9 @@ function Reserve({ onClose }) {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Nombre <span className="required">*</span></label>
+                  <label>
+                    Nombre <span className="required">*</span>
+                  </label>
                   <input
                     name="nombre_bote"
                     value={form.nombre_bote}
@@ -168,7 +183,9 @@ function Reserve({ onClose }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Tipo <span className="required">*</span></label>
+                  <label>
+                    Tipo <span className="required">*</span>
+                  </label>
                   <select
                     name="tipo_barco"
                     value={form.tipo_barco}
@@ -186,7 +203,9 @@ function Reserve({ onClose }) {
 
               <div className="form-row-3">
                 <div className="form-group">
-                  <label>Eslora (m) <span className="required">*</span></label>
+                  <label>
+                    Eslora (m) <span className="required">*</span>
+                  </label>
                   <input
                     name="eslora"
                     value={form.eslora}
@@ -201,7 +220,9 @@ function Reserve({ onClose }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Manga (m) <span className="required">*</span></label>
+                  <label>
+                    Manga (m) <span className="required">*</span>
+                  </label>
                   <input
                     name="manga"
                     value={form.manga}
@@ -216,7 +237,9 @@ function Reserve({ onClose }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Calado (m) <span className="required">*</span></label>
+                  <label>
+                    Calado (m) <span className="required">*</span>
+                  </label>
                   <input
                     name="calado"
                     value={form.calado}
@@ -235,7 +258,9 @@ function Reserve({ onClose }) {
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Llegada / Arrival <span className="required">*</span></label>
+                  <label>
+                    Llegada / Arrival <span className="required">*</span>
+                  </label>
                   <input
                     name="fecha_llegada"
                     value={form.fecha_llegada}
@@ -246,7 +271,9 @@ function Reserve({ onClose }) {
                 </div>
 
                 <div className="form-group">
-                  <label>Salida / Departure <span className="required">*</span></label>
+                  <label>
+                    Salida / Departure <span className="required">*</span>
+                  </label>
                   <input
                     name="fecha_salida"
                     value={form.fecha_salida}
@@ -290,7 +317,7 @@ function Reserve({ onClose }) {
             </div>
 
             <div className="popup-footer">
-              <button className="btn-submit" disabled={loading}>
+              <button type="submit" className="btn-submit" disabled={loading}>
                 {loading ? 'Enviando...' : 'Enviar solicitud'}
               </button>
             </div>
