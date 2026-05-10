@@ -1,0 +1,176 @@
+:root {
+  --mare-dark: #0a2540;
+  --mare-mid: #1b4f61;
+
+  --emp-purple: #534781;
+  --emp-gold: #c9b157;
+
+  --bg: #f0f4f8;
+
+  --text: #1a2a3a;
+  --text-mid: #4a6080;
+
+  --border: #dde4ed;
+}
+
+/* BASE */
+
+.admin-shell {
+  min-height: 100vh;
+
+  background: var(--bg);
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+
+.admin-header {
+  background: var(--mare-dark);
+
+  border-bottom: 2px solid var(--emp-gold);
+
+  position: sticky;
+  top: 0;
+
+  z-index: 100;
+}
+
+.admin-header-inner {
+  height: 60px;
+
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* LOGO */
+
+.admin-logo {
+  color: white;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  letter-spacing: 1px;
+}
+
+/* NAV */
+
+.admin-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  flex: 1;
+}
+
+.admin-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  text-decoration: none;
+
+  color: rgba(255,255,255,.7);
+
+  padding: 8px 14px;
+
+  border-radius: 8px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition: .15s;
+}
+
+.admin-link:hover {
+  background: rgba(255,255,255,.08);
+  color: white;
+}
+
+.admin-link.active {
+  background: rgba(201,177,87,.12);
+  color: var(--emp-gold);
+}
+
+/* USER */
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: rgba(255,255,255,.65);
+
+  font-size: 11px;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #4ade80;
+}
+
+.admin-avatar {
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  background: var(--emp-purple);
+
+  border: 2px solid var(--emp-gold);
+
+  color: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* MAIN */
+
+.admin-main {
+  flex: 1;
+
+  width: 100%;
+  max-width: 1400px;
+
+  margin: 0 auto;
+
+  padding: 24px;
+}
+
+/* FOOTER */
+
+.admin-footer {
+  background: var(--mare-dark);
+
+  color: rgba(255,255,255,.35);
+
+  text-align: center;
+
+  padding: 12px;
+
+  font-size: 11px;
+}
