@@ -1,0 +1,61 @@
+.client-main {
+  min-height: 100vh;
+  background: #ecf0f3;
+}
+
+/* BOTÓN FLOTANTE */
+
+.fab {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+}
+
+.fab-btn {
+  width: 56px;
+  height: 56px;
+
+  border-radius: 50%;
+
+  background: #534781;
+  color: #ffffff;
+
+  border: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 4px 20px rgba(83, 71, 129, 0.4);
+
+  transition: all .2s;
+}
+
+.fab-btn:hover {
+  background: #3d3460;
+  transform: scale(1.08);
+}
+
+.fab-label {
+  background: #534781;
+  color: #c9b157;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .5px;
+
+  padding: .3rem .7rem;
+
+  border-radius: 20px;
+  white-space: nowrap;
+
+  border: 1px solid rgba(201, 177, 87, 0.3);
+}
