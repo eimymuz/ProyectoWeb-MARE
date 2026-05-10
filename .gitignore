@@ -7,18 +7,51 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencias
 node_modules
+*/node_modules
+
+# Build
 dist
 dist-ssr
-*.local
+build
 
-# Editor directories and files
+# Variables de entorno
+.env
+.env.*
+
+# Caché
+.cache
+.parcel-cache
+.vite
+.eslintcache
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# VSCode / IDE
 .vscode/*
 !.vscode/extensions.json
+
 .idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# Archivos temporales
+tmp
+temp
+*.tmp
+
+# SQLite
+*.sqlite
+*.sqlite3
+
+# Frontend
+Frontend/node_modules
+Frontend/dist
+
+# Backend
+Backend/node_modules
+
+# Cobertura
+coverage
+.nyc_output
