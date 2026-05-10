@@ -1,0 +1,124 @@
+.admin-pendientes-page {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-pendientes-header h2 {
+  margin: 0;
+  font-size: 34px;
+  color: #0b2038;
+}
+
+.admin-pendientes-toggle {
+  background: white;
+  border: 1px solid #d9e2ec;
+  border-radius: 16px;
+  padding: 16px 20px;
+  color: #0b2038;
+  font-weight: 600;
+}
+
+.admin-pendientes-filters {
+  background: white;
+  border: 1px solid #d9e2ec;
+  border-radius: 18px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+
+.admin-filter-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 18px;
+}
+
+.admin-filter-group label {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #476180;
+  text-transform: uppercase;
+}
+
+.admin-filter-group input,
+.admin-filter-group select {
+  height: 46px;
+  border: 1px solid #d8e1ec;
+  border-radius: 12px;
+  padding: 0 14px;
+  font-size: 15px;
+  background: white;
+  color: #0b2038;
+}
+
+.admin-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  margin-bottom: 18px;
+  color: #0b2038;
+  font-size: 14px;
+}
+
+.admin-filter-btn {
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: #08233a;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-pendientes-table {
+  background: white;
+  border: 1px solid #d9e2ec;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.admin-pendientes-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-pendientes-table thead {
+  background: #eef3f8;
+}
+
+.admin-pendientes-table th {
+  padding: 18px;
+  text-align: left;
+  font-size: 13px;
+  color: #476180;
+  text-transform: uppercase;
+}
+
+.admin-pendientes-table td {
+  padding: 18px;
+  border-top: 1px solid #e6edf5;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.admin-empty {
+  text-align: center;
+  padding: 50px !important;
+  color: #90a0b7 !important;
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #fff4d7;
+  color: #9a6a00;
+  font-size: 12px;
+  font-weight: 700;
+}

@@ -32,6 +32,7 @@
   padding: 12px 14px;
   border-radius: 10px;
   font-size: 15px;
+  transition: 0.2s;
 }
 
 .admin-sidebar a.active,
@@ -43,9 +44,10 @@
 .admin-content {
   flex: 1;
   padding: 30px;
+  overflow-x: auto;
 }
 
 .admin-content h2 {
-  margin: 0 0 8px;
+  margin: 0;
   color: #1f2937;
 }
