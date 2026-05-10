@@ -1,39 +1,22 @@
-import { NavLink, Outlet } from 'react-router-dom'
-import { ClipboardList, Clock, Check, Map } from 'lucide-react'
-import '../styles/admin.css'
+import { Outlet } from 'react-router-dom'
+
+import AdminNavbar from '../components/admin/AdminNavbar'
+import AdminFooter from '../components/admin/AdminFooter'
+
+import '../styles/admin-layout.css'
 
 function AdminLayout() {
   return (
-    <div className="admin-layout">
-      <aside className="admin-sidebar">
-        <h1>MARE</h1>
+    <div className="admin-shell">
 
-        <nav>
-          <NavLink to="/admin/pendientes">
-            <ClipboardList size={18} />
-            Pendientes
-          </NavLink>
+      <AdminNavbar />
 
-          <NavLink to="/admin/esperando">
-            <Clock size={18} />
-            Esperando
-          </NavLink>
-
-          <NavLink to="/admin/asignadas">
-            <Check size={18} />
-            Asignadas
-          </NavLink>
-
-          <NavLink to="/admin/mapa">
-            <Map size={18} />
-            Mapa
-          </NavLink>
-        </nav>
-      </aside>
-
-      <main className="admin-content">
+      <main className="admin-main">
         <Outlet />
       </main>
+
+      <AdminFooter />
+
     </div>
   )
 }
