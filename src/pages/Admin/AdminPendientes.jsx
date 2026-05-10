@@ -11,7 +11,12 @@ function AdminPendientes() {
 
   const obtenerSolicitudes = async () => {
     try {
-      const res = await fetch(`${API_URL}/solicitudes`)
+      setLoading(true)
+
+      const res = await fetch(
+        `${API_URL}/solicitudes?estado=PENDIENTE`
+      )
+
       const data = await res.json()
 
       if (data.ok) {
@@ -32,13 +37,15 @@ function AdminPendientes() {
 
       <div className="card">
         <div className="card-header">
-          <h3 className="card-title">Listado de solicitudes</h3>
+          <h3 className="card-title">
+            Listado de solicitudes
+          </h3>
         </div>
 
         {loading ? (
           <p>Cargando solicitudes...</p>
         ) : solicitudes.length === 0 ? (
-          <p>No hay solicitudes registradas.</p>
+          <p>No hay solicitudes pendientes.</p>
         ) : (
           <div className="table-wrap">
             <table>
@@ -48,6 +55,9 @@ function AdminPendientes() {
                   <th>Solicitante</th>
                   <th>Embarcación</th>
                   <th>Tipo</th>
+                  <th>Eslora</th>
+                  <th>Manga</th>
+                  <th>Calado</th>
                   <th>Llegada</th>
                   <th>Salida</th>
                   <th>Estado</th>
@@ -57,16 +67,56 @@ function AdminPendientes() {
               <tbody>
                 {solicitudes.map((solicitud) => (
                   <tr key={solicitud.id}>
-                    <td>#{solicitud.id}</td>
                     <td>
-                      <strong>{solicitud.fullname}</strong>
-                      <br />
-                      <span className="text-muted">{solicitud.email}</span>
+                      #{solicitud.id}
                     </td>
-                    <td>{solicitud.nombre_bote}</td>
-                    <td>{solicitud.tipo_barco}</td>
-                    <td>{solicitud.fecha_llegada}</td>
-                    <td>{solicitud.fecha_salida}</td>
+
+                    <td>
+                      <strong>
+                        {solicitud.fullname}
+                      </strong>
+
+                      <br />
+
+                      <span className="text-muted">
+                        {solicitud.email}
+                      </span>
+
+                      <br />
+
+                      <span className="text-muted">
+                        {solicitud.telefono}
+                      </span>
+                    </td>
+
+                    <td>
+                      {solicitud.nombre_bote}
+                    </td>
+
+                    <td>
+                      {solicitud.tipo_barco}
+                    </td>
+
+                    <td>
+                      {solicitud.eslora} m
+                    </td>
+
+                    <td>
+                      {solicitud.manga} m
+                    </td>
+
+                    <td>
+                      {solicitud.calado} m
+                    </td>
+
+                    <td>
+                      {solicitud.fecha_llegada}
+                    </td>
+
+                    <td>
+                      {solicitud.fecha_salida}
+                    </td>
+
                     <td>
                       <span className="badge badge-warning">
                         {solicitud.estado}
