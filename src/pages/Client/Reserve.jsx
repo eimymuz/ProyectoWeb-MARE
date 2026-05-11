@@ -2,6 +2,8 @@ import { useState } from 'react'
 import API_URL from '../../services/api'
 import '../../styles/reserve.css'
 
+// Componente de popup para crear una nueva solicitud de marina.
+// Se muestra desde ClientLayout y envía datos al backend.
 function Reserve({ onClose }) {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(null)

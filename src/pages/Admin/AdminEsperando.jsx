@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import API_URL from '../../services/api'
 import './adminEsperando.css'
 
+// Página que muestra solicitudes en estado EN_ESPERA.
+// Permite revisar y aprobar solicitudes antes de asignarlas.
 function AdminEsperando() {
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
-  const [mostrarFiltros, setMostrarFiltros] = useState(true)
+  const [mostrarFiltros, setMostrarFiltros] = useState(false)
 
   const [busqueda, setBusqueda] = useState('')
   const [tipoBarco, setTipoBarco] = useState('')

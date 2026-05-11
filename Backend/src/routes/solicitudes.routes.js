@@ -3,6 +3,7 @@ import pool from '../../config/db.js'
 
 const router = Router()
 
+// Estados compatibles con el sistema de solicitudes.
 const ESTADOS_VALIDOS = [
   'PENDIENTE',
   'EN_ESPERA',
@@ -13,6 +14,8 @@ const ESTADOS_VALIDOS = [
 
 /* ======================================
    OBTENER SOLICITUDES
+   Endpoint GET /api/solicitudes
+   - devuelve todas las solicitudes o filtra por estado
 ====================================== */
 
 router.get('/', async (req, res) => {
@@ -124,26 +127,9 @@ router.get('/:id', async (req, res) => {
       })
     }
 
-    const [historial] = await pool.query(
-      `
-      SELECT
-        id,
-        estado_anterior,
-        estado_nuevo,
-        fecha_cambio
-      FROM solicitud_historial
-      WHERE solicitud_id = ?
-      ORDER BY fecha_cambio DESC
-      `,
-      [id]
-    )
-
     res.json({
       ok: true,
-      solicitud: {
-        ...solicitudes[0],
-        historial
-      }
+      solicitud: solicitudes[0]
     })
   } catch (error) {
     res.status(500).json({
@@ -156,6 +142,9 @@ router.get('/:id', async (req, res) => {
 
 /* ======================================
    CREAR SOLICITUD
+   Endpoint POST /api/solicitudes
+   - Inserta cliente, tipo de barco, embarcación y solicitud
+   - Usa transacción para mantener consistencia
 ====================================== */
 
 router.post('/', async (req, res) => {
@@ -260,7 +249,7 @@ router.post('/', async (req, res) => {
         const [tipoResult] = await connection.query(
           `
           INSERT INTO tipo_barco (tipo_barco)
-          VALUES (?)
+          VALUES (UPPER(?))
           `,
           [tipo_barco]
         )
@@ -334,7 +323,193 @@ router.post('/', async (req, res) => {
 })
 
 /* ======================================
+   EDITAR SOLICITUD
+   Endpoint PUT /api/solicitudes/:id
+   - Actualiza los datos del cliente, embarcación y solicitud
+   - Verifica la existencia de la solicitud antes de aplicar cambios
+====================================== */
+
+router.put('/:id', async (req, res) => {
+  const connection = await pool.getConnection()
+
+  try {
+    const { id } = req.params
+
+    const {
+      fullname,
+      telefono,
+      email,
+      nombre_bote,
+      tipo_barco,
+      tipo_barco_id,
+      eslora,
+      manga,
+      calado,
+      fecha_llegada,
+      fecha_salida,
+      primera_entrada_mexico,
+      comentario
+    } = req.body
+
+    if (
+      !fullname ||
+      !telefono ||
+      !email ||
+      !nombre_bote ||
+      (!tipo_barco && !tipo_barco_id) ||
+      !eslora ||
+      !manga ||
+      !calado ||
+      !fecha_llegada ||
+      !fecha_salida
+    ) {
+      return res.status(400).json({
+        ok: false,
+        error: 'Todos los campos obligatorios son requeridos'
+      })
+    }
+
+    if (fecha_salida <= fecha_llegada) {
+      return res.status(400).json({
+        ok: false,
+        error: 'La fecha de salida debe ser posterior a la fecha de llegada'
+      })
+    }
+
+    await connection.beginTransaction()
+
+    const [solicitudActual] = await connection.query(
+      `
+      SELECT
+        s.id,
+        s.embarcacion_id,
+        e.cliente_id,
+        e.tipo_barco_id
+      FROM solicitud s
+      INNER JOIN embarcacion e ON s.embarcacion_id = e.id
+      WHERE s.id = ?
+      LIMIT 1
+      `,
+      [id]
+    )
+
+    if (solicitudActual.length === 0) {
+      await connection.rollback()
+
+      return res.status(404).json({
+        ok: false,
+        error: 'Solicitud no encontrada'
+      })
+    }
+
+    const solicitud = solicitudActual[0]
+
+    let tipoBarcoId = tipo_barco_id || solicitud.tipo_barco_id
+
+    if (!tipo_barco_id && tipo_barco) {
+      const [tipoExistente] = await connection.query(
+        `
+        SELECT id
+        FROM tipo_barco
+        WHERE tipo_barco = UPPER(?)
+        LIMIT 1
+        `,
+        [tipo_barco]
+      )
+
+      if (tipoExistente.length > 0) {
+        tipoBarcoId = tipoExistente[0].id
+      } else {
+        const [tipoResult] = await connection.query(
+          `
+          INSERT INTO tipo_barco (tipo_barco)
+          VALUES (UPPER(?))
+          `,
+          [tipo_barco]
+        )
+
+        tipoBarcoId = tipoResult.insertId
+      }
+    }
+
+    await connection.query(
+      `
+      UPDATE clientes
+      SET fullname = ?,
+          email = ?,
+          telefono = ?
+      WHERE id = ?
+      `,
+      [
+        fullname,
+        email,
+        telefono,
+        solicitud.cliente_id
+      ]
+    )
+
+    await connection.query(
+      `
+      UPDATE embarcacion
+      SET tipo_barco_id = ?,
+          nombre_bote = ?,
+          eslora = ?,
+          manga = ?,
+          calado = ?
+      WHERE id = ?
+      `,
+      [
+        tipoBarcoId,
+        nombre_bote,
+        Number(eslora),
+        Number(manga),
+        Number(calado),
+        solicitud.embarcacion_id
+      ]
+    )
+
+    await connection.query(
+      `
+      UPDATE solicitud
+      SET fecha_llegada = ?,
+          fecha_salida = ?,
+          comentario = ?,
+          primera_entrada_mexico = ?
+      WHERE id = ?
+      `,
+      [
+        fecha_llegada,
+        fecha_salida,
+        comentario || null,
+        primera_entrada_mexico ? 1 : 0,
+        id
+      ]
+    )
+
+    await connection.commit()
+
+    res.json({
+      ok: true,
+      message: 'Solicitud actualizada correctamente'
+    })
+  } catch (error) {
+    await connection.rollback()
+
+    res.status(500).json({
+      ok: false,
+      error: 'Error al actualizar la solicitud',
+      detalle: error.message
+    })
+  } finally {
+    connection.release()
+  }
+})
+
+/* ======================================
    ACTUALIZAR ESTADO
+   Endpoint PATCH /api/solicitudes/:id/estado
+   - Cambia el estado de la solicitud
+   - Requiere motivo cuando se rechaza
 ====================================== */
 
 router.patch('/:id/estado', async (req, res) => {
@@ -404,6 +579,8 @@ router.patch('/:id/estado', async (req, res) => {
 
 /* ======================================
    ELIMINAR SOLICITUD
+   Endpoint DELETE /api/solicitudes/:id
+   - Borra una solicitud existente por ID
 ====================================== */
 
 router.delete('/:id', async (req, res) => {

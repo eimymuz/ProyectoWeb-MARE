@@ -1,0 +1,103 @@
+.admin-editar-page {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.admin-editar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-editar-top h2 {
+  margin: 0;
+  font-size: 32px;
+  color: #0b2038;
+}
+
+.btn-volver {
+  border: 1px solid #d9e2ec;
+  background: white;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.editar-card {
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  border: 1px solid #d9e2ec;
+}
+
+.editar-card h3 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #0b2038;
+}
+
+.editar-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.editar-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.editar-grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.editar-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.editar-field label {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #476180;
+  text-transform: uppercase;
+}
+
+.editar-field input,
+.editar-field select,
+.editar-field textarea {
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 15px;
+}
+
+.editar-check {
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.editar-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.btn-guardar {
+  background: #0b2038;
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn-cancelar {
+  background: white;
+  border: 1px solid #d9e2ec;
+  padding: 14px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+}

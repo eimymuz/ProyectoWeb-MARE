@@ -7,6 +7,8 @@ import {
   ClipboardList
 } from 'lucide-react'
 
+// Barra de navegación del panel administrativo.
+// Permite cambiar entre las secciones de solicitudes y el mapa.
 function AdminNavbar() {
   return (
     <header className="admin-header">

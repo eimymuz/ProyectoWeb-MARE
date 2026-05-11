@@ -8,6 +8,8 @@ dotenv.config()
 
 const app = express()
 
+// Servidor Express principal del backend.
+// Configura CORS, parseo JSON y monta las rutas de solicitudes.
 /* ======================================
    MIDDLEWARES
 ====================================== */

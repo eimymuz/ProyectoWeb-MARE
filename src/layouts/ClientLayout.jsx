@@ -5,6 +5,8 @@ import Reserve from '../pages/client/Reserve'
 
 import '../styles/client.css'
 
+// Layout público para el cliente.
+// Muestra un botón flotante para abrir el formulario de reserva.
 function ClientLayout() {
   const [showReserve, setShowReserve] = useState(false)
 

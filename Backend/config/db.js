@@ -3,6 +3,8 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+// Pool de conexiones MySQL usado por las rutas.
+// Lee la configuración de la base de datos desde variables de entorno.
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
