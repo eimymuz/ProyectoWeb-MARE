@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react'
 import API_URL from '../../services/api'
 import './adminEsperando.css'
 
-// Página que muestra solicitudes en estado EN_ESPERA.
-// Permite revisar y aprobar solicitudes antes de asignarlas.
 function AdminEsperando() {
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
@@ -32,6 +30,38 @@ function AdminEsperando() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const contactarCliente = (solicitud) => {
+    const email = solicitud.email
+    const cliente = solicitud.fullname
+    const embarcacion = solicitud.nombre_bote
+
+    if (!email) {
+      alert('Esta solicitud no tiene correo registrado.')
+      return
+    }
+
+    const asunto = `Solicitud — ${embarcacion}`
+
+    const cuerpo = `
+Estimado/a ${cliente}:
+
+Le contactamos respecto a su solicitud para la embarcación ${embarcacion}.
+
+Su solicitud se encuentra actualmente en estado EN ESPERA.
+
+Quedamos atentos a la información necesaria para continuar con el proceso de asignación.
+
+Saludos cordiales.
+MARE - Marina Puerto de la Navidad
+    `
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+      email
+    )}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+
+    window.open(gmailUrl, '_blank')
   }
 
   const aprobarSolicitud = async (id) => {
@@ -127,10 +157,7 @@ function AdminEsperando() {
               </select>
             </div>
 
-            <button
-              type="button"
-              className="admin-esperando-filter-btn"
-            >
+            <button type="button" className="admin-esperando-filter-btn">
               Filtrar
             </button>
           </div>
@@ -152,9 +179,7 @@ function AdminEsperando() {
                 onChange={(e) => setFecha(e.target.value)}
               />
 
-              <small>
-                ℹ Fecha exacta de solicitud · activa ↔ para rango
-              </small>
+              <small>ℹ Fecha exacta de solicitud · activa ↔ para rango</small>
             </div>
 
             <div className="admin-esperando-group">
@@ -199,9 +224,7 @@ function AdminEsperando() {
             ) : (
               solicitudesFiltradas.map((solicitud) => (
                 <tr key={solicitud.id}>
-                  <td className="admin-esperando-id">
-                    #{solicitud.id}
-                  </td>
+                  <td className="admin-esperando-id">#{solicitud.id}</td>
 
                   <td>{solicitud.nombre_bote}</td>
 
@@ -221,7 +244,10 @@ function AdminEsperando() {
 
                   <td>
                     <div className="admin-esperando-actions">
-                      <button className="btn-contactar">
+                      <button
+                        className="btn-contactar"
+                        onClick={() => contactarCliente(solicitud)}
+                      >
                         Contactar
                       </button>
 
