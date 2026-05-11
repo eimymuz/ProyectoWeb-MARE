@@ -20,7 +20,7 @@ function AppRoutes() {
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="pendientes" element={<AdminPendientes />} />
           <Route
-            path="pendientes/editar/:id"
+            path="editar/:id"
             element={<AdminEditarSolicitud />}
           />
           <Route path="esperando" element={<AdminEsperando />} />

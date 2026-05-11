@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import API_URL from '../../services/api'
 import './AdminEditarSolicitud.css'
 
-// Página para editar una solicitud existente.
-// Carga la solicitud por ID y permite guardar los cambios en el backend.
 function AdminEditarSolicitud() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  const from = searchParams.get('from') || 'pendientes'
 
   const [form, setForm] = useState({
     fullname: '',
@@ -46,8 +47,10 @@ function AdminEditarSolicitud() {
           eslora: data.solicitud.eslora || '',
           manga: data.solicitud.manga || '',
           calado: data.solicitud.calado || '',
-          fecha_llegada: data.solicitud.fecha_llegada?.slice(0, 10) || '',
-          fecha_salida: data.solicitud.fecha_salida?.slice(0, 10) || '',
+          fecha_llegada:
+            data.solicitud.fecha_llegada?.slice(0, 10) || '',
+          fecha_salida:
+            data.solicitud.fecha_salida?.slice(0, 10) || '',
           comentario: data.solicitud.comentario || '',
           primera_entrada_mexico:
             Number(data.solicitud.primera_entrada_mexico) === 1
@@ -95,7 +98,7 @@ function AdminEditarSolicitud() {
       }
 
       alert('Cambios guardados correctamente')
-      navigate('/admin/pendientes')
+      navigate(`/admin/${from}`)
     } catch (error) {
       console.error(error)
       alert('Error de conexión con el servidor')
@@ -116,7 +119,7 @@ function AdminEditarSolicitud() {
         <button
           type="button"
           className="btn-volver"
-          onClick={() => navigate('/admin/pendientes')}
+          onClick={() => navigate(`/admin/${from}`)}
         >
           ← Volver
         </button>
@@ -128,6 +131,7 @@ function AdminEditarSolicitud() {
         <div className="editar-grid editar-grid-2">
           <div className="editar-field">
             <label>Nombre completo</label>
+
             <input
               name="fullname"
               value={form.fullname}
@@ -137,6 +141,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Correo electrónico</label>
+
             <input
               name="email"
               value={form.email}
@@ -146,6 +151,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Teléfono</label>
+
             <input
               name="telefono"
               value={form.telefono}
@@ -161,6 +167,7 @@ function AdminEditarSolicitud() {
         <div className="editar-grid editar-grid-2">
           <div className="editar-field">
             <label>Nombre de la embarcación</label>
+
             <input
               name="nombre_bote"
               value={form.nombre_bote}
@@ -170,6 +177,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Tipo de embarcación</label>
+
             <select
               name="tipo_barco"
               value={form.tipo_barco}
@@ -187,6 +195,7 @@ function AdminEditarSolicitud() {
         <div className="editar-grid editar-grid-3">
           <div className="editar-field">
             <label>Eslora (m)</label>
+
             <input
               name="eslora"
               value={form.eslora}
@@ -196,6 +205,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Manga (m)</label>
+
             <input
               name="manga"
               value={form.manga}
@@ -205,6 +215,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Calado (m)</label>
+
             <input
               name="calado"
               value={form.calado}
@@ -220,6 +231,7 @@ function AdminEditarSolicitud() {
         <div className="editar-grid editar-grid-2">
           <div className="editar-field">
             <label>Fecha de llegada</label>
+
             <input
               type="date"
               name="fecha_llegada"
@@ -230,6 +242,7 @@ function AdminEditarSolicitud() {
 
           <div className="editar-field">
             <label>Fecha de salida</label>
+
             <input
               type="date"
               name="fecha_salida"
@@ -241,6 +254,7 @@ function AdminEditarSolicitud() {
 
         <div className="editar-field">
           <label>Comentario</label>
+
           <textarea
             name="comentario"
             value={form.comentario}
@@ -255,23 +269,20 @@ function AdminEditarSolicitud() {
             checked={form.primera_entrada_mexico}
             onChange={handleChange}
           />
+
           Primera entrada a México / First entry to Mexico
         </label>
       </section>
 
       <div className="editar-actions">
-        <button
-          type="submit"
-          className="btn-guardar"
-          disabled={guardando}
-        >
+        <button type="submit" className="btn-guardar" disabled={guardando}>
           {guardando ? 'Guardando...' : 'Guardar cambios'}
         </button>
 
         <button
           type="button"
           className="btn-cancelar"
-          onClick={() => navigate('/admin/pendientes')}
+          onClick={() => navigate(`/admin/${from}`)}
         >
           Cancelar
         </button>

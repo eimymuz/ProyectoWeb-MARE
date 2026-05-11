@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import API_URL from '../../services/api'
 import './adminEsperando.css'
 
 function AdminEsperando() {
+  const navigate = useNavigate()
+
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
@@ -10,6 +13,10 @@ function AdminEsperando() {
   const [busqueda, setBusqueda] = useState('')
   const [tipoBarco, setTipoBarco] = useState('')
   const [fecha, setFecha] = useState('')
+
+  const [solicitudRechazo, setSolicitudRechazo] = useState(null)
+  const [motivoRechazo, setMotivoRechazo] = useState('')
+  const [solicitudVer, setSolicitudVer] = useState(null)
 
   useEffect(() => {
     obtenerSolicitudes()
@@ -98,11 +105,72 @@ MARE - Marina Puerto de la Navidad
         return
       }
 
+      cerrarModalVer()
       obtenerSolicitudes()
     } catch (error) {
       console.error(error)
       alert('Error de conexión')
     }
+  }
+
+  const abrirModalRechazo = (solicitud) => {
+    setSolicitudRechazo(solicitud)
+    setMotivoRechazo('')
+  }
+
+  const cerrarModalRechazo = () => {
+    setSolicitudRechazo(null)
+    setMotivoRechazo('')
+  }
+
+  const rechazarSolicitud = async () => {
+    if (!motivoRechazo.trim()) {
+      alert('Debes escribir el motivo del rechazo.')
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `${API_URL}/solicitudes/${solicitudRechazo.id}/estado`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            estado: 'RECHAZADA',
+            motivo_rechazo: motivoRechazo
+          })
+        }
+      )
+
+      const data = await res.json()
+
+      if (!data.ok) {
+        alert(data.error || 'No se pudo rechazar la solicitud.')
+        return
+      }
+
+      cerrarModalRechazo()
+      obtenerSolicitudes()
+    } catch (error) {
+      console.error(error)
+      alert('Error de conexión')
+    }
+  }
+
+  const abrirModalVer = (solicitud) => {
+    setSolicitudVer(solicitud)
+  }
+
+  const cerrarModalVer = () => {
+    setSolicitudVer(null)
+  }
+
+  const editarSolicitud = (solicitud) => {
+    cerrarModalVer()
+
+    navigate(`/admin/editar/${solicitud.id}?from=esperando`)
   }
 
   const formatearFecha = (fecha) => {
@@ -113,6 +181,10 @@ MARE - Marina Puerto de la Navidad
       month: '2-digit',
       year: 'numeric'
     })
+  }
+
+  const formatearSiNo = (valor) => {
+    return valor ? 'Sí' : 'No'
   }
 
   const solicitudesFiltradas = solicitudes.filter((s) => {
@@ -151,6 +223,7 @@ MARE - Marina Puerto de la Navidad
           <div>
             <div className="admin-esperando-group">
               <label>Buscar</label>
+
               <input
                 placeholder="Embarcación o cliente..."
                 value={busqueda}
@@ -160,6 +233,7 @@ MARE - Marina Puerto de la Navidad
 
             <div className="admin-esperando-group">
               <label>Tipo de barco</label>
+
               <select
                 value={tipoBarco}
                 onChange={(e) => setTipoBarco(e.target.value)}
@@ -182,10 +256,12 @@ MARE - Marina Puerto de la Navidad
               <label>Fecha</label>
 
               <div className="admin-date-tabs">
-                <button className="active">✦ Solicitud</button>
-                <button>→ Llegada</button>
-                <button>← Salida</button>
-                <button>↔ Estancia</button>
+                <button type="button" className="active">
+                  ✦ Solicitud
+                </button>
+                <button type="button">→ Llegada</button>
+                <button type="button">← Salida</button>
+                <button type="button">↔ Estancia</button>
               </div>
 
               <input
@@ -194,11 +270,14 @@ MARE - Marina Puerto de la Navidad
                 onChange={(e) => setFecha(e.target.value)}
               />
 
-              <small>ℹ Fecha exacta de solicitud · activa ↔ para rango</small>
+              <small>
+                ℹ Fecha exacta de solicitud · activa ↔ para rango
+              </small>
             </div>
 
             <div className="admin-esperando-group">
               <label>Ordenar por</label>
+
               <select>
                 <option>Más reciente</option>
                 <option>Más antiguo</option>
@@ -240,15 +319,10 @@ MARE - Marina Puerto de la Navidad
               solicitudesFiltradas.map((solicitud) => (
                 <tr key={solicitud.id}>
                   <td className="admin-esperando-id">#{solicitud.id}</td>
-
                   <td>{solicitud.nombre_bote}</td>
-
                   <td>{solicitud.fullname}</td>
-
                   <td>{solicitud.tipo_barco}</td>
-
                   <td>{formatearFecha(solicitud.fecha_llegada)}</td>
-
                   <td>{formatearFecha(solicitud.fecha_salida)}</td>
 
                   <td>
@@ -260,6 +334,7 @@ MARE - Marina Puerto de la Navidad
                   <td>
                     <div className="admin-esperando-actions">
                       <button
+                        type="button"
                         className="btn-contactar"
                         onClick={() => contactarCliente(solicitud)}
                       >
@@ -267,6 +342,7 @@ MARE - Marina Puerto de la Navidad
                       </button>
 
                       <button
+                        type="button"
                         className="btn-revisar"
                         onClick={() => revisarCliente(solicitud)}
                       >
@@ -274,17 +350,26 @@ MARE - Marina Puerto de la Navidad
                       </button>
 
                       <button
+                        type="button"
                         className="btn-asignar"
                         onClick={() => aprobarSolicitud(solicitud.id)}
                       >
                         Asignar
                       </button>
 
-                      <button className="btn-rechazar">
+                      <button
+                        type="button"
+                        className="btn-rechazar"
+                        onClick={() => abrirModalRechazo(solicitud)}
+                      >
                         Rechazar
                       </button>
 
-                      <button className="btn-ver">
+                      <button
+                        type="button"
+                        className="btn-ver"
+                        onClick={() => abrirModalVer(solicitud)}
+                      >
                         Ver
                       </button>
                     </div>
@@ -295,6 +380,195 @@ MARE - Marina Puerto de la Navidad
           </tbody>
         </table>
       </div>
+
+      {solicitudRechazo && (
+        <div className="reject-modal-overlay">
+          <div className="reject-modal">
+            <h3>Rechazar solicitud</h3>
+
+            <p>
+              Embarcación:{' '}
+              <strong>{solicitudRechazo.nombre_bote}</strong>
+            </p>
+
+            <label>
+              Motivo del rechazo <span>*</span>
+            </label>
+
+            <textarea
+              value={motivoRechazo}
+              onChange={(e) => setMotivoRechazo(e.target.value)}
+              placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
+              rows="5"
+            />
+
+            <div className="reject-modal-actions">
+              <button
+                type="button"
+                className="btn-cancelar"
+                onClick={cerrarModalRechazo}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="btn-confirmar-rechazo"
+                onClick={rechazarSolicitud}
+              >
+                Confirmar rechazo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {solicitudVer && (
+        <div className="solicitud-modal-overlay">
+          <div className="solicitud-modal">
+            <div className="solicitud-modal-header">
+              <div>
+                <div className="modal-title-row">
+                  <h2>{solicitudVer.nombre_bote}</h2>
+                  <span className="modal-status">En espera</span>
+                </div>
+
+                <p>
+                  {solicitudVer.fullname} · Solicitud #{solicitudVer.id}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="modal-close"
+                onClick={cerrarModalVer}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="solicitud-modal-body">
+              <div className="modal-column">
+                <h4>Embarcación</h4>
+
+                <div className="modal-item">
+                  <span>Tipo</span>
+                  <strong>{solicitudVer.tipo_barco || '—'}</strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Eslora</span>
+                  <strong>{solicitudVer.eslora || '—'} m</strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Manga</span>
+                  <strong>{solicitudVer.manga || '—'} m</strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Calado</span>
+                  <strong>{solicitudVer.calado || '—'} m</strong>
+                </div>
+              </div>
+
+              <div className="modal-column">
+                <h4>Cliente</h4>
+
+                <div className="modal-item">
+                  <span>Nombre</span>
+                  <strong>{solicitudVer.fullname || '—'}</strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Email</span>
+                  <strong className="modal-link">
+                    {solicitudVer.email || '—'}
+                  </strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Teléfono</span>
+                  <strong>{solicitudVer.telefono || '—'}</strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>1ª entrada MX</span>
+                  <strong className="modal-gold">
+                    {formatearSiNo(
+                      solicitudVer.primera_entrada_mexico
+                    )}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="modal-column">
+                <h4>Estancia</h4>
+
+                <div className="modal-item">
+                  <span>Solicitud</span>
+                  <strong>
+                    {formatearFecha(solicitudVer.fecha_solicitud)}
+                  </strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Llegada</span>
+                  <strong>
+                    {formatearFecha(solicitudVer.fecha_llegada)}
+                  </strong>
+                </div>
+
+                <div className="modal-item">
+                  <span>Salida</span>
+                  <strong>
+                    {formatearFecha(solicitudVer.fecha_salida)}
+                  </strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="solicitud-modal-footer">
+              <div>
+                <button
+                  type="button"
+                  className="btn-asignar"
+                  onClick={() => aprobarSolicitud(solicitudVer.id)}
+                >
+                  Aprobar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-rechazar"
+                  onClick={() => {
+                    cerrarModalVer()
+                    abrirModalRechazo(solicitudVer)
+                  }}
+                >
+                  Rechazar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-ver"
+                  onClick={() => editarSolicitud(solicitudVer)}
+                >
+                  Editar
+                </button>
+              </div>
+
+              <button
+                type="button"
+                className="btn-cancelar"
+                onClick={cerrarModalVer}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

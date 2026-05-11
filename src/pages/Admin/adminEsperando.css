@@ -1,25 +1,38 @@
 .admin-esperando-page {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
 .admin-esperando-header h2 {
-  margin: 0;
+  margin: 0 0 8px;
   font-size: 24px;
   color: #061f3a;
 }
 
+/* FILTROS */
+
 .admin-esperando-toggle {
   width: 100%;
+
   background: #ffffff;
   border: 1px solid #d8e1ec;
   border-radius: 14px;
+
   padding: 14px 20px;
+
   color: #061f3a;
   font-weight: 600;
+
   display: flex;
+  align-items: center;
   justify-content: space-between;
+
+  text-align: left;
   cursor: pointer;
 }
 
@@ -27,7 +40,9 @@
   background: #ffffff;
   border: 1px solid #d8e1ec;
   border-radius: 16px;
-  padding: 24px 26px;
+
+  padding: 22px 24px;
+
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 26px;
@@ -41,6 +56,7 @@
 
 .admin-esperando-group label {
   margin-bottom: 8px;
+
   font-size: 12px;
   font-weight: 700;
   color: #38527a;
@@ -49,10 +65,13 @@
 
 .admin-esperando-group input,
 .admin-esperando-group select {
-  height: 46px;
+  height: 44px;
+
   border: 1px solid #d8e1ec;
   border-radius: 10px;
+
   padding: 0 14px;
+
   font-size: 15px;
   color: #061f3a;
   background: #ffffff;
@@ -60,8 +79,8 @@
 
 .admin-esperando-group small {
   margin-top: 8px;
+  color: #8a9ab5;
   font-size: 12px;
-  color: #7d8fb0;
 }
 
 .admin-date-tabs {
@@ -73,10 +92,13 @@
 
 .admin-date-tabs button {
   height: 32px;
+
   border: 1px solid #d8e1ec;
   border-radius: 10px;
+
   background: #eef3f8;
   color: #0b3a70;
+
   font-size: 12px;
   cursor: pointer;
 }
@@ -87,20 +109,27 @@
 }
 
 .admin-esperando-filter-btn {
-  width: 100%;
   height: 38px;
+
   border: none;
   border-radius: 10px;
+
   background: #08233a;
-  color: white;
+  color: #ffffff;
+
   font-weight: 700;
   cursor: pointer;
 }
 
+/* TABLA */
+
 .admin-esperando-table {
-  background: white;
+  width: 100%;
+
+  background: #ffffff;
   border: 1px solid #d8e1ec;
   border-radius: 16px;
+
   overflow: hidden;
 }
 
@@ -115,15 +144,20 @@
 
 .admin-esperando-table th {
   padding: 14px 20px;
+
   text-align: left;
+
   font-size: 13px;
+  font-weight: 700;
   color: #38527a;
   text-transform: uppercase;
 }
 
 .admin-esperando-table td {
   padding: 16px 20px;
+
   border-top: 1px solid #e4ebf3;
+
   font-size: 14px;
   color: #061f3a;
 }
@@ -139,30 +173,44 @@
   color: #8a98b3 !important;
 }
 
+/* BADGE */
+
 .admin-esperando-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 7px 14px;
+
   border-radius: 999px;
+
   background: #e7f1ff;
   color: #0b4e91;
+
   font-size: 12px;
   font-weight: 700;
 }
 
+/* BOTONES */
+
 .admin-esperando-actions {
   display: flex;
-  gap: 6px;
   align-items: center;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .admin-esperando-actions button {
   border: none;
   border-radius: 9px;
-  padding: 7px 14px;
+
+  padding: 8px 16px;
+
   font-size: 13px;
   font-weight: 700;
+
   cursor: pointer;
+  line-height: 1;
 }
 
 .btn-contactar {
@@ -183,12 +231,344 @@
 }
 
 .btn-rechazar {
-  background: #c7362f;
-  color: white;
+  background: #c7352e;
+  color: #ffffff;
 }
 
 .btn-ver {
-  background: white;
-  color: #38527a;
+  background: #ffffff;
+  color: #27486d;
   border: 1px solid #d8e1ec !important;
+}
+
+/* OVERLAY */
+
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0, 0, 0, 0.48);
+
+  z-index: 999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+}
+
+/* MODAL VER */
+
+.modal-ver {
+  width: 980px;
+  max-width: 95vw;
+
+  background: #ffffff;
+  border-radius: 16px;
+
+  overflow: hidden;
+
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+
+  animation: modalFade 0.2s ease;
+}
+
+.modal-ver-header {
+  padding: 32px 40px 26px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  border-bottom: 1px solid #e1e8f0;
+}
+
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.modal-title-row h2 {
+  margin: 0;
+
+  color: #071f3d;
+  font-size: 30px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+.modal-status {
+  background: #e7f1ff;
+  color: #0b4e91;
+
+  padding: 8px 18px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.modal-ver-header p {
+  margin: 8px 0 0;
+
+  color: #8192b0;
+  font-size: 18px;
+}
+
+.modal-ver-close {
+  border: none;
+  background: transparent;
+
+  color: #8192b0;
+
+  font-size: 42px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.modal-ver-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  padding: 40px;
+}
+
+.modal-ver-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  padding-right: 32px;
+  margin-right: 32px;
+
+  border-right: 1px solid #dbe3ef;
+}
+
+.modal-ver-column.no-border {
+  border-right: none;
+  margin-right: 0;
+  padding-right: 0;
+}
+
+.modal-ver-column h4 {
+  margin: 0 0 22px;
+
+  color: #b8962e;
+
+  font-size: 15px;
+  font-weight: 900;
+
+  letter-spacing: 0.3px;
+}
+
+.modal-ver-column span {
+  margin-top: 10px;
+
+  color: #8797b5;
+  font-size: 14px;
+}
+
+.modal-ver-column strong {
+  color: #071f3d;
+
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+.modal-email {
+  color: #0069b4 !important;
+}
+
+.modal-warning {
+  color: #a26000 !important;
+}
+
+.modal-ver-footer {
+  background: #eef4fb;
+
+  padding: 24px 40px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-ver-footer div {
+  display: flex;
+  gap: 12px;
+}
+
+/* MODAL RECHAZAR */
+
+.modal-rechazo {
+  width: 430px;
+  max-width: 92vw;
+
+  background: #ffffff;
+  border-radius: 14px;
+
+  padding: 28px;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+
+  animation: modalFade 0.2s ease;
+}
+
+.modal-rechazo h3 {
+  margin: 0 0 14px;
+
+  color: #c7362f;
+
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.modal-rechazo p {
+  margin: 0 0 18px;
+
+  color: #38527a;
+  font-size: 14px;
+}
+
+.modal-rechazo label {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: #38527a;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.modal-rechazo label span {
+  color: #c7362f;
+}
+
+.modal-rechazo textarea {
+  width: 100%;
+  min-height: 95px;
+
+  border: 1px solid #d8e1ec;
+  border-radius: 10px;
+
+  padding: 14px;
+
+  font-size: 14px;
+  font-family: inherit;
+  color: #061f3a;
+
+  resize: vertical;
+  box-sizing: border-box;
+
+  outline: none;
+}
+
+.modal-rechazo textarea:focus {
+  border-color: #b89b32;
+}
+
+.modal-rechazo-actions {
+  margin-top: 22px;
+
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* BOTONES MODAL */
+
+.btn-cancelar {
+  background: #ffffff !important;
+  color: #0b2a50 !important;
+
+  border: 1px solid #d8e1ec !important;
+  border-radius: 9px;
+
+  padding: 10px 18px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.btn-confirmar-rechazo {
+  background: #cf2f29 !important;
+  color: #ffffff !important;
+
+  border: none !important;
+  border-radius: 9px;
+
+  padding: 10px 18px;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.btn-confirmar-rechazo:hover {
+  background: #b82621 !important;
+}
+
+/* ANIMACIÓN */
+
+@keyframes modalFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .admin-esperando-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-ver-body {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .modal-ver-column {
+    border-right: none;
+    border-bottom: 1px solid #dbe3ef;
+
+    padding-right: 0;
+    padding-bottom: 24px;
+    margin-right: 0;
+  }
+
+  .modal-ver-column.no-border {
+    border-bottom: none;
+  }
+
+  .modal-ver-footer {
+    flex-direction: column;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .modal-ver-footer div {
+    flex-wrap: wrap;
+  }
+
+  .admin-esperando-actions {
+    flex-wrap: wrap;
+  }
 }
