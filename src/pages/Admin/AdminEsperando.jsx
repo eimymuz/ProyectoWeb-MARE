@@ -64,6 +64,21 @@ MARE - Marina Puerto de la Navidad
     window.open(gmailUrl, '_blank')
   }
 
+  const revisarCliente = (solicitud) => {
+    const email = solicitud.email
+
+    if (!email) {
+      alert('Esta solicitud no tiene correo registrado.')
+      return
+    }
+
+    const gmailSearchUrl = `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(
+      email
+    )}`
+
+    window.open(gmailSearchUrl, '_blank')
+  }
+
   const aprobarSolicitud = async (id) => {
     try {
       const res = await fetch(`${API_URL}/solicitudes/${id}/estado`, {
@@ -251,7 +266,10 @@ MARE - Marina Puerto de la Navidad
                         Contactar
                       </button>
 
-                      <button className="btn-revisar">
+                      <button
+                        className="btn-revisar"
+                        onClick={() => revisarCliente(solicitud)}
+                      >
                         Revisar
                       </button>
 
