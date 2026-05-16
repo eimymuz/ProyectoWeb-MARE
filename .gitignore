@@ -50,3 +50,7 @@ coverage/
 *.sqlite3
 *.bak
 *.backup
+
+
+# Otros
+mio/*

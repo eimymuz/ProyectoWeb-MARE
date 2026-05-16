@@ -1,11 +1,13 @@
 :root {
-  --mare-dark: #0a2540;
-  --mare-mid: #1b4f61;
+  /* Paleta morada principal */
+  --mare-dark: #251545;       /* morado profundo — fondo header/footer */
+  --mare-mid: #3d2b6b;        /* morado oscuro — hover, superficies */
+  --mare-light: #4a3280;      /* morado medio — acentos */
 
-  --emp-purple: #534781;
-  --emp-gold: #c9b157;
+  --emp-gold: #c9a84c;        /* dorado — acento principal */
+  --emp-gold-light: #e0c878;  /* dorado claro — hover dorado */
 
-  --bg: #f0f4f8;
+  --bg: #f0f4f8;              /* fondo general */
 
   --text: #1a2a3a;
   --text-mid: #4a6080;
@@ -17,9 +19,7 @@
 
 .admin-shell {
   min-height: 100vh;
-
   background: var(--bg);
-
   display: flex;
   flex-direction: column;
 }
@@ -28,24 +28,17 @@
 
 .admin-header {
   background: var(--mare-dark);
-
   border-bottom: 2px solid var(--emp-gold);
-
   position: sticky;
   top: 0;
-
   z-index: 100;
 }
 
 .admin-header-inner {
   height: 60px;
-
   max-width: 1400px;
-
   margin: 0 auto;
-
   padding: 0 24px;
-
   display: flex;
   align-items: center;
   gap: 24px;
@@ -54,12 +47,10 @@
 /* LOGO */
 
 .admin-logo {
-  color: white;
-
+  color: var(--emp-gold);
   font-size: 28px;
   font-weight: 700;
-
-  letter-spacing: 1px;
+  letter-spacing: 2px;
 }
 
 /* NAV */
@@ -68,7 +59,6 @@
   display: flex;
   align-items: center;
   gap: 8px;
-
   flex: 1;
 }
 
@@ -76,28 +66,22 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
   text-decoration: none;
-
-  color: rgba(255,255,255,.7);
-
+  color: rgba(255, 255, 255, 0.7);
   padding: 8px 14px;
-
   border-radius: 8px;
-
   font-size: 13px;
   font-weight: 500;
-
-  transition: .15s;
+  transition: 0.15s;
 }
 
 .admin-link:hover {
-  background: rgba(255,255,255,.08);
+  background: rgba(255, 255, 255, 0.08);
   color: white;
 }
 
 .admin-link.active {
-  background: rgba(201,177,87,.12);
+  background: rgba(201, 168, 76, 0.15);
   color: var(--emp-gold);
 }
 
@@ -113,37 +97,27 @@
   display: flex;
   align-items: center;
   gap: 6px;
-
-  color: rgba(255,255,255,.65);
-
+  color: rgba(255, 255, 255, 0.65);
   font-size: 11px;
 }
 
 .status-dot {
   width: 6px;
   height: 6px;
-
   border-radius: 50%;
-
   background: #4ade80;
 }
 
 .admin-avatar {
-  width: 30px;
-  height: 30px;
-
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-
-  background: var(--emp-purple);
-
+  background: var(--mare-light);
   border: 2px solid var(--emp-gold);
-
   color: white;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 11px;
   font-weight: 700;
 }
@@ -152,12 +126,9 @@
 
 .admin-main {
   flex: 1;
-
   width: 100%;
   max-width: 1400px;
-
   margin: 0 auto;
-
   padding: 24px;
 }
 
@@ -165,12 +136,47 @@
 
 .admin-footer {
   background: var(--mare-dark);
-
-  color: rgba(255,255,255,.35);
-
+  color: rgba(255, 255, 255, 0.35);
   text-align: center;
-
   padding: 12px;
-
   font-size: 11px;
+}
+
+/* Info del usuario logueado en el header */
+.admin-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.admin-user-name {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.admin-user-rol {
+  color: var(--emp-gold);
+  font-size: 10px;
+  text-transform: capitalize;
+}
+
+/* Botón de cerrar sesión */
+.admin-logout {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  transition: 0.15s;
+}
+
+.admin-logout:hover {
+  background: rgba(192, 57, 43, 0.3);
+  border-color: rgba(192, 57, 43, 0.5);
+  color: #ff6b6b;
 }
