@@ -347,3 +347,33 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* FILTROS de usuarios */
+
+.admin-usuarios-filtros {
+  display: flex;
+  gap: 8px;
+}
+
+.filtro-btn {
+  background: white;
+  color: #4a6080;
+  border: 1.5px solid #dde4ed;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.filtro-btn:hover {
+  border-color: #3d2b6b;
+  color: #3d2b6b;
+}
+
+.filtro-btn.active {
+  background: #251545;
+  color: white;
+  border-color: #251545;
+}

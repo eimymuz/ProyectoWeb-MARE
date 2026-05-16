@@ -184,230 +184,26 @@ function AdminUsuarios() {
     return u.rol === filtroRol && u.activo
     })
 
-  return (
-    <div className="admin-usuarios-page">
+        return (
+        <div className="admin-usuarios-page">
 
-      <div className="admin-usuarios-header">
-        <h2>Gestión de usuarios</h2>
+            {/* ENCABEZADO */}
+            <div className="admin-usuarios-header">
+            <h2>Gestión de usuarios</h2>
 
-        {/* Solo los gerentes pueden crear nuevos usuarios */}
-        {esGerente && (
-          <button
-            type="button"
-            className="btn-nuevo-usuario"
-            onClick={abrirModalCrear}
-          >
-            + Nuevo usuario
-          </button>
-        )}
-      </div>
-
-      <div className="admin-usuarios-table">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nombre</th>
-              <th>Email</th>
-              <th>Usuario</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              {esGerente && <th>Acciones</th>}
-            </tr>
-          </thead>
-
-          <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan={esGerente ? 7 : 6} className="admin-usuarios-empty">
-                  Cargando usuarios...
-                </td>
-              </tr>
-            ) : usuarios.length === 0 ? (
-              <tr>
-                <td colSpan={esGerente ? 7 : 6} className="admin-usuarios-empty">
-                  No hay usuarios registrados.
-                </td>
-              </tr>
-            ) : (
-              usuarios.map((usuario) => (
-                <tr key={usuario.id} className={!usuario.activo ? 'usuario-inactivo' : ''}>
-                  <td className="usuario-id">#{usuario.id}</td>
-                  <td>{usuario.fullname}</td>
-                  <td>{usuario.email}</td>
-                  <td>{usuario.username}</td>
-
-                  <td>
-                    {/* Badge de color según el rol */}
-                    <span className={`rol-badge rol-${usuario.rol}`}>
-                      {usuario.rol}
-                    </span>
-                  </td>
-
-                  <td>
-                    <span className={`estado-badge ${usuario.activo ? 'activo' : 'inactivo'}`}>
-                      {usuario.activo ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </td>
-
-                  {esGerente && (
-                    <td>
-                      <div className="usuario-actions">
-                        <button
-                          type="button"
-                          className="btn-editar"
-                          onClick={() => abrirModalEditar(usuario)}
-                        >
-                          Editar
-                        </button>
-
-                        {usuario.activo ? (
-                          <button
-                            type="button"
-                            className="btn-desactivar"
-                            onClick={() => desactivarUsuario(usuario.id)}
-                            // No puede desactivarse a sí mismo
-                            disabled={usuario.id === adminActual?.id}
-                          >
-                            Desactivar
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="btn-reactivar"
-                            onClick={() => reactivarUsuario(usuario.id)}
-                          >
-                            Reactivar
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  )}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* MODAL CREAR / EDITAR */}
-      {modal && (
-        <div
-          className="usuarios-modal-overlay"
-          onClick={cerrarModal}
-        >
-          <div
-            className="usuarios-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="usuarios-modal-header">
-              <h3>
-                {modal === 'crear' ? 'Nuevo usuario' : 'Editar usuario'}
-              </h3>
-
-              <button
+            {esGerente && (
+                <button
                 type="button"
-                className="modal-close"
-                onClick={cerrarModal}
-              >
-                ×
-              </button>
+                className="btn-nuevo-usuario"
+                onClick={abrirModalCrear}
+                >
+                + Nuevo usuario
+                </button>
+            )}
             </div>
 
-            <form className="usuarios-form" onSubmit={handleGuardar}>
-
-              <div className="form-row">
-                <div className="form-field">
-                  <label>Nombre completo</label>
-                  <input
-                    name="fullname"
-                    placeholder="Nombre del administrador"
-                    value={form.fullname}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label>Email</label>
-                  <input
-                    name="email"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    value={form.email}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-field">
-                  <label>Usuario</label>
-                  <input
-                    name="username"
-                    placeholder="Nombre de usuario"
-                    value={form.username}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="form-field">
-                  <label>
-                    Contraseña
-                    {modal === 'editar' && (
-                      <span className="label-hint"> (dejar vacío para no cambiar)</span>
-                    )}
-                  </label>
-                  <input
-                    name="password"
-                    type="password"
-                    placeholder={modal === 'crear' ? 'Contraseña' : 'Nueva contraseña (opcional)'}
-                    value={form.password}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className="form-field">
-                <label>Rol</label>
-                <select
-                  name="rol"
-                  value={form.rol}
-                  onChange={handleChange}
-                >
-                  <option value="empleado">Empleado</option>
-                  <option value="gerente">Gerente</option>
-                  <option value="inactivo">Inactivo</option>
-                </select>
-              </div>
-
-              {error && (
-                <p className="form-error">{error}</p>
-              )}
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="btn-cancelar"
-                  onClick={cerrarModal}
-                >
-                  Cancelar
-                </button>
-
-                <button
-                  type="submit"
-                  className="btn-guardar"
-                  disabled={guardando}
-                >
-                  {guardando ? 'Guardando...' : 'Guardar'}
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-      )}
-
-        <div className="admin-usuarios-filtros">
+            {/* FILTROS — entre el header y la tabla */}
+            <div className="admin-usuarios-filtros">
             <button
                 type="button"
                 className={`filtro-btn ${filtroRol === '' ? 'active' : ''}`}
@@ -439,11 +235,214 @@ function AdminUsuarios() {
             >
                 Inactivos
             </button>
-        </div>
+            </div>
 
-    </div>
-    
-  )
+            {/* TABLA */}
+            <div className="admin-usuarios-table">
+            <table>
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    {esGerente && <th>Acciones</th>}
+                </tr>
+                </thead>
+
+                <tbody>
+                {loading ? (
+                    <tr>
+                    <td colSpan={esGerente ? 7 : 6} className="admin-usuarios-empty">
+                        Cargando usuarios...
+                    </td>
+                    </tr>
+                ) : usuariosFiltrados.length === 0 ? (
+                    <tr>
+                    <td colSpan={esGerente ? 7 : 6} className="admin-usuarios-empty">
+                        No hay usuarios en este filtro.
+                    </td>
+                    </tr>
+                ) : (
+                    usuariosFiltrados.map((usuario) => (
+                    <tr key={usuario.id} className={!usuario.activo ? 'usuario-inactivo' : ''}>
+                        <td className="usuario-id">#{usuario.id}</td>
+                        <td>{usuario.fullname}</td>
+                        <td>{usuario.email}</td>
+                        <td>{usuario.username}</td>
+
+                        <td>
+                        <span className={`rol-badge rol-${usuario.rol}`}>
+                            {usuario.rol}
+                        </span>
+                        </td>
+
+                        <td>
+                        <span className={`estado-badge ${usuario.activo ? 'activo' : 'inactivo'}`}>
+                            {usuario.activo ? 'Activo' : 'Inactivo'}
+                        </span>
+                        </td>
+
+                        {esGerente && (
+                        <td>
+                            <div className="usuario-actions">
+                            <button
+                                type="button"
+                                className="btn-editar"
+                                onClick={() => abrirModalEditar(usuario)}
+                            >
+                                Editar
+                            </button>
+
+                            {usuario.activo ? (
+                                <button
+                                type="button"
+                                className="btn-desactivar"
+                                onClick={() => desactivarUsuario(usuario.id)}
+                                disabled={usuario.id === adminActual?.id}
+                                >
+                                Desactivar
+                                </button>
+                            ) : (
+                                <button
+                                type="button"
+                                className="btn-reactivar"
+                                onClick={() => reactivarUsuario(usuario.id)}
+                                >
+                                Reactivar
+                                </button>
+                            )}
+                            </div>
+                        </td>
+                        )}
+                    </tr>
+                    ))
+                )}
+                </tbody>
+            </table>
+            </div>
+
+            {/* MODAL CREAR / EDITAR */}
+            {modal && (
+            <div
+                className="usuarios-modal-overlay"
+                onClick={cerrarModal}
+            >
+                <div
+                className="usuarios-modal"
+                onClick={(e) => e.stopPropagation()}
+                >
+                <div className="usuarios-modal-header">
+                    <h3>
+                    {modal === 'crear' ? 'Nuevo usuario' : 'Editar usuario'}
+                    </h3>
+
+                    <button
+                    type="button"
+                    className="modal-close"
+                    onClick={cerrarModal}
+                    >
+                    ×
+                    </button>
+                </div>
+
+                <form className="usuarios-form" onSubmit={handleGuardar}>
+
+                    <div className="form-row">
+                    <div className="form-field">
+                        <label>Nombre completo</label>
+                        <input
+                        name="fullname"
+                        placeholder="Nombre del administrador"
+                        value={form.fullname}
+                        onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>Email</label>
+                        <input
+                        name="email"
+                        type="email"
+                        placeholder="correo@ejemplo.com"
+                        value={form.email}
+                        onChange={handleChange}
+                        />
+                    </div>
+                    </div>
+
+                    <div className="form-row">
+                    <div className="form-field">
+                        <label>Usuario</label>
+                        <input
+                        name="username"
+                        placeholder="Nombre de usuario"
+                        value={form.username}
+                        onChange={handleChange}
+                        />
+                    </div>
+
+                    <div className="form-field">
+                        <label>
+                        Contraseña
+                        {modal === 'editar' && (
+                            <span className="label-hint"> (dejar vacío para no cambiar)</span>
+                        )}
+                        </label>
+                        <input
+                        name="password"
+                        type="password"
+                        placeholder={modal === 'crear' ? 'Contraseña' : 'Nueva contraseña (opcional)'}
+                        value={form.password}
+                        onChange={handleChange}
+                        />
+                    </div>
+                    </div>
+
+                    <div className="form-field">
+                    <label>Rol</label>
+                    <select
+                        name="rol"
+                        value={form.rol}
+                        onChange={handleChange}
+                    >
+                        <option value="empleado">Empleado</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                    </div>
+
+                    {error && (
+                    <p className="form-error">{error}</p>
+                    )}
+
+                    <div className="form-actions">
+                    <button
+                        type="button"
+                        className="btn-cancelar"
+                        onClick={cerrarModal}
+                    >
+                        Cancelar
+                    </button>
+
+                    <button
+                        type="submit"
+                        className="btn-guardar"
+                        disabled={guardando}
+                    >
+                        {guardando ? 'Guardando...' : 'Guardar'}
+                    </button>
+                    </div>
+
+                </form>
+                </div>
+            </div>
+            )}
+
+        </div>
+        )
 }
 
 export default AdminUsuarios

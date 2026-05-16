@@ -67,17 +67,19 @@ function AdminNavbar() {
             Mapa
           </NavLink>
 
+
+
+        </nav>
+
+        {/* USER */}
+        <div className="admin-user">
+
           {esGerente && (
             <NavLink to="/admin/usuarios" className="admin-link">
               <Users size={16} />
               Usuarios
             </NavLink>
           )}
-
-        </nav>
-
-        {/* USER */}
-        <div className="admin-user">
 
             {/* Nombre y rol del admin logueado */}
             <div className="admin-user-info">
