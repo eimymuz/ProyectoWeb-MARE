@@ -6,6 +6,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth.routes.js'
 import usuariosRoutes from './routes/usuarios.routes.js'
 import solicitudesRoutes from './routes/solicitudes.routes.js'
+import mapaRoutes from './routes/mapa.routes.js'
 
 dotenv.config()
 
@@ -50,6 +51,8 @@ app.use('/api/auth', authRoutes)
 app.use('/api/usuarios', usuariosRoutes)
 
 app.use('/api/solicitudes', solicitudesRoutes)
+
+app.use('/api/mapa', mapaRoutes)
 
 /* ======================================
    SERVIDOR

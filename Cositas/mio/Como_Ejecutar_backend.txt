@@ -1,0 +1,5 @@
+
+
+cd Backend
+
+node src/server.js
