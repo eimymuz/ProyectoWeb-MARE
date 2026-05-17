@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API_URL from '../../services/api'
 import './adminEsperando.css'
+import Toast from '../../components/admin/Toast'
 
 function AdminEsperando() {
   const navigate = useNavigate()
@@ -9,6 +10,7 @@ function AdminEsperando() {
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
+  const [toast, setToast] = useState(null)
 
   const [busqueda, setBusqueda] = useState('')
   const [tipoBarco, setTipoBarco] = useState('')
@@ -52,17 +54,17 @@ function AdminEsperando() {
     const asunto = `Solicitud — ${embarcacion}`
 
     const cuerpo = `
-Estimado/a ${cliente}:
+      Estimado/a ${cliente}:
 
-Le contactamos respecto a su solicitud para la embarcación ${embarcacion}.
+      Le contactamos respecto a su solicitud para la embarcación ${embarcacion}.
 
-Su solicitud se encuentra actualmente en estado EN ESPERA.
+      Su solicitud se encuentra actualmente en estado EN ESPERA.
 
-Quedamos atentos a la información necesaria para continuar con el proceso de asignación.
+      Quedamos atentos a la información necesaria para continuar con el proceso de asignación.
 
-Saludos cordiales.
-MARE - Marina Puerto de la Navidad
-    `
+      Saludos cordiales.
+      MARE - Marina Puerto de la Navidad
+          `
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
       email
@@ -125,9 +127,20 @@ const aprobarSolicitud = async (id) => {
     setMotivoRechazo('')
   }
 
+  // Validaciones para rechazar solicitud: motivo requerido, mínimo 10 caracteres, máximo 500 caracteres
   const rechazarSolicitud = async () => {
     if (!motivoRechazo.trim()) {
-      alert('Debes escribir el motivo del rechazo.')
+      setToast({ mensaje: 'Debes escribir el motivo del rechazo', tipo: 'error' })
+      return
+    }
+
+    if (motivoRechazo.trim().length < 10) {
+      setToast({ mensaje: 'El motivo debe tener al menos 10 caracteres', tipo: 'error' })
+      return
+    }
+
+    if (motivoRechazo.length > 500) {
+      setToast({ mensaje: 'El motivo no puede superar los 500 caracteres', tipo: 'warning' })
       return
     }
 
@@ -136,9 +149,7 @@ const aprobarSolicitud = async (id) => {
         `${API_URL}/solicitudes/${solicitudRechazo.id}/estado`,
         {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             estado: 'RECHAZADA',
             motivo_rechazo: motivoRechazo
@@ -149,7 +160,7 @@ const aprobarSolicitud = async (id) => {
       const data = await res.json()
 
       if (!data.ok) {
-        alert(data.error || 'No se pudo rechazar la solicitud.')
+        setToast({ mensaje: data.error || 'No se pudo rechazar la solicitud', tipo: 'error' })
         return
       }
 
@@ -157,7 +168,7 @@ const aprobarSolicitud = async (id) => {
       obtenerSolicitudes()
     } catch (error) {
       console.error(error)
-      alert('Error de conexión')
+      setToast({ mensaje: 'Error de conexión', tipo: 'error' })
     }
   }
 
@@ -458,6 +469,16 @@ const aprobarSolicitud = async (id) => {
               placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
               rows="5"
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
+              {motivoRechazo.trim().length > 0 && motivoRechazo.trim().length < 10 && (
+                <span style={{ fontSize: '11px', color: '#c0392b' }}>Mínimo 10 caracteres</span>
+              )}
+              <span style={{ fontSize: '11px', color: motivoRechazo.length > 500 ? '#c0392b' : '#aaa', marginLeft: 'auto' }}>
+                {motivoRechazo.length}/500
+              </span>
+            </div>
+
+
 
             <div className="reject-modal-actions">
               <button
@@ -634,6 +655,15 @@ const aprobarSolicitud = async (id) => {
           </div>
         </div>
       )}
+
+      {toast && (
+        <Toast
+          mensaje={toast.mensaje}
+          tipo={toast.tipo}
+          onClose={() => setToast(null)}
+        />
+      )}
+
     </div>
   )
 }
