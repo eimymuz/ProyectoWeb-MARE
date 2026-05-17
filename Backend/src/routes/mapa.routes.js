@@ -4,6 +4,11 @@ import authMiddleware from '../middlewares/auth.middleware.js'
 
 const router = Router()
 
+// Convierte fecha ISO a formato YYYY-MM-DD para MariaDB
+const formatearFecha = (fecha) => {
+  return new Date(fecha).toISOString().slice(0, 10)
+}
+
 /* ======================================
    OBTENER DATOS DEL MAPA
    GET /api/mapa
@@ -161,12 +166,17 @@ router.post('/asignar', authMiddleware, async (req, res) => {
 
     // Crea la asignación
     const [asignacion] = await connection.query(
-      `INSERT INTO asignacion (solicitud_id, muelle_id, administrador_id, fecha_inicio, fecha_fin, activa)
-       VALUES (?, ?, ?, ?, ?, 1)`,
-      [solicitud_id, espacioData[0].muelle_id, req.admin.id, fecha_inicio, fecha_fin]
+    `INSERT INTO asignacion (solicitud_id, muelle_id, administrador_id, fecha_inicio, fecha_fin, activa)
+    VALUES (?, ?, ?, ?, ?, 1)`,
+    [
+        solicitud_id,
+        espacioData[0].muelle_id,
+        req.admin.id,
+        formatearFecha(fecha_inicio),  // 
+        formatearFecha(fecha_fin)      // 
+    ]
     )
-
-    // Vincula el espacio a la asignación
+        // Vincula el espacio a la asignación
     await connection.query(
       `INSERT INTO asignacion_espacios (asignacion_id, espacio_id) VALUES (?, ?)`,
       [asignacion.insertId, espacio_id]
@@ -215,5 +225,8 @@ router.patch('/asignacion/:id/desactivar', authMiddleware, async (req, res) => {
     })
   }
 })
+
+
+
 
 export default router

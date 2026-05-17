@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchAuth } from '../../services/api'
 import './AdminMapa.css'
+import { useSearchParams } from 'react-router-dom'
 
 // Colores del mapa según estado del espacio
 const COLORES = {
@@ -47,6 +48,8 @@ function AdminMapa() {
   const [espacioAsignar, setEspacioAsignar] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
+  const [searchParams] = useSearchParams()
+
   // Manejo del zoom con rueda del mouse — centrado en el cursor
   const handleWheel = useCallback((e) => {
     e.preventDefault()
@@ -65,11 +68,23 @@ function AdminMapa() {
     })
   }, [])
 
+  
+
   // Carga los datos del mapa al montar el componente
   useEffect(() => {
     cargarMapa()
     cargarSolicitudesAprobadas()
   }, [])
+
+
+  // Si viene del flujo de aprobación, preselecciona la solicitud automáticamente
+  useEffect(() => {
+    const solicitudId = searchParams.get('solicitud')
+    if (!solicitudId || solicitudesAprobadas.length === 0) return
+
+    const sol = solicitudesAprobadas.find(s => s.id === Number(solicitudId))
+    if (sol) setSolicitudSeleccionada(sol)
+  }, [solicitudesAprobadas, searchParams])
 
     // Registra el wheel como non-passive para evitar scroll de página
     useEffect(() => {
