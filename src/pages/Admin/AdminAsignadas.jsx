@@ -41,7 +41,7 @@ function AdminAsignadas() {
 
   // Redirige al mapa con la solicitud preseleccionada para reasignar
   const reasignar = (solicitudId) => {
-    navigate(`/admin/mapa?solicitud=${solicitudId}`)
+    navigate(`/admin/mapa?solicitud=${solicitudId}&reasignar=1`)
   }
 
   const formatearFecha = (fecha) => {

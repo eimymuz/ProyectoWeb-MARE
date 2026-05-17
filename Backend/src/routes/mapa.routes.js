@@ -80,8 +80,10 @@ router.get('/', authMiddleware, async (req, res) => {
 
 router.get('/solicitudes-aprobadas', authMiddleware, async (req, res) => {
   try {
-    const [solicitudes] = await pool.query(
-      `SELECT
+    const { reasignar } = req.query
+
+    let sql = `
+      SELECT
         s.id,
         s.fecha_llegada,
         s.fecha_salida,
@@ -97,11 +99,18 @@ router.get('/solicitudes-aprobadas', authMiddleware, async (req, res) => {
       INNER JOIN tipo_barco tb ON tb.id = emb.tipo_barco_id
       INNER JOIN clientes c ON c.id = emb.cliente_id
       WHERE s.estado = 'APROBADA'
-      AND s.id NOT IN (
+    `
+
+    // Si no es reasignación, excluye las que ya tienen espacio asignado
+    if (!reasignar) {
+      sql += ` AND s.id NOT IN (
         SELECT solicitud_id FROM asignacion WHERE activa = 1
-      )
-      ORDER BY s.fecha_llegada ASC`
-    )
+      )`
+    }
+
+    sql += ` ORDER BY s.fecha_llegada ASC`
+
+    const [solicitudes] = await pool.query(sql)
 
     res.json({ ok: true, solicitudes })
   } catch (error) {
@@ -270,6 +279,32 @@ router.get('/asignaciones', authMiddleware, async (req, res) => {
     res.status(500).json({
       ok: false,
       error: 'Error al obtener asignaciones',
+      detalle: error.message
+    })
+  }
+})
+
+
+
+
+/* ======================================
+   DESACTIVAR ASIGNACIÓN POR SOLICITUD
+   PATCH /api/mapa/asignacion/por-solicitud/:solicitudId/desactivar
+====================================== */
+router.patch('/asignacion/por-solicitud/:solicitudId/desactivar', authMiddleware, async (req, res) => {
+  try {
+    const { solicitudId } = req.params
+
+    await pool.query(
+      `UPDATE asignacion SET activa = 0 WHERE solicitud_id = ? AND activa = 1`,
+      [solicitudId]
+    )
+
+    res.json({ ok: true, message: 'Asignación anterior desactivada' })
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: 'Error al desactivar asignación',
       detalle: error.message
     })
   }

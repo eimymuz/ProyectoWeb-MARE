@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchAuth } from '../../services/api'
 import './AdminMapa.css'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+
 
 // Colores del mapa según estado del espacio
 const COLORES = {
@@ -11,7 +12,13 @@ const COLORES = {
   posible: '#fb923c',  // naranja
   nocabe:  '#94a3b8',  // gris oscuro
   pasillo: '#c9a84c',  // dorado
+
+  
 }
+
+
+
+
 
 // Página del mapa operativo de la marina.
 // Muestra todos los muelles y espacios en un canvas SVG interactivo.
@@ -28,6 +35,16 @@ function AdminMapa() {
   const [solicitudesAprobadas, setSolicitudesAprobadas] = useState([])
 
   const [loading, setLoading] = useState(true)
+
+
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  // ID de la solicitud que viene por URL al llegar desde el flujo de aprobación
+  const solicitudParam = searchParams.get('solicitud')
+
+  // Indica si se viene desde el flujo de reasignación (desde Asignadas)
+  const esReasignacion = searchParams.get('reasignar') === '1'
 
   // Espacio seleccionado al hacer clic
   const [espacioSeleccionado, setEspacioSeleccionado] = useState(null)
@@ -48,7 +65,7 @@ function AdminMapa() {
   const [espacioAsignar, setEspacioAsignar] = useState(null)
   const [guardando, setGuardando] = useState(false)
 
-  const [searchParams] = useSearchParams()
+ 
 
   // Manejo del zoom con rueda del mouse — centrado en el cursor
   const handleWheel = useCallback((e) => {
@@ -74,6 +91,22 @@ function AdminMapa() {
   useEffect(() => {
     cargarMapa()
     cargarSolicitudesAprobadas()
+  }, [])
+
+  // Si el usuario sale del mapa sin asignar, regresa la solicitud a EN_ESPERA
+  useEffect(() => {
+    return () => {
+      const solicitudId = searchParams.get('solicitud')
+      const esReasig = searchParams.get('reasignar') === '1'
+
+      if (!solicitudId || esReasig) return
+
+      // Verifica si la solicitud ya fue asignada antes de revertir
+      fetchAuth(`/solicitudes/${solicitudId}/estado`, {
+        method: 'PATCH',
+        body: JSON.stringify({ estado: 'EN_ESPERA' })
+      }).catch(console.error)
+    }
   }, [])
 
 
@@ -126,7 +159,13 @@ function AdminMapa() {
 
   const cargarSolicitudesAprobadas = async () => {
     try {
-      const res = await fetchAuth('/mapa/solicitudes-aprobadas')
+      // Si viene con parámetro reasignar, incluye solicitudes ya asignadas
+      const esReasignacion = searchParams.get('reasignar') === '1'
+      const url = esReasignacion
+        ? '/mapa/solicitudes-aprobadas?reasignar=1'
+        : '/mapa/solicitudes-aprobadas'
+
+      const res = await fetchAuth(url)
       const data = await res.json()
       if (data.ok) setSolicitudesAprobadas(data.solicitudes)
     } catch (error) {
@@ -134,19 +173,33 @@ function AdminMapa() {
     }
   }
 
-  // Determina el color de un espacio según su estado y la solicitud seleccionada
-  const colorEspacio = (espacio) => {
-    if (espacio.es_pasillo) return COLORES.pasillo
-    if (espacio.asignacion_id) return COLORES.ocupado
-    if (!solicitudSeleccionada) return COLORES.libre
 
-    const eslora = parseFloat(solicitudSeleccionada.eslora)
-    const manga  = parseFloat(solicitudSeleccionada.manga)
-    const ancho  = parseFloat(espacio.ancho)
-    const alto   = parseFloat(espacio.alto)
 
-    return eslora <= alto && manga <= ancho ? COLORES.ideal : COLORES.nocabe
-  }
+    const HOLGURA_MIN = 0.15 // 15% de margen mínimo
+
+    const colorEspacio = (espacio) => {
+      if (espacio.es_pasillo) return COLORES.pasillo
+      if (espacio.asignacion_id) return COLORES.ocupado
+      if (!solicitudSeleccionada) return COLORES.libre
+
+      const eslora = parseFloat(solicitudSeleccionada.eslora)
+      const manga  = parseFloat(solicitudSeleccionada.manga)
+      const largo  = parseFloat(espacio.alto) / 10
+      const ancho  = parseFloat(espacio.ancho) / 10
+
+      // No cabe físicamente
+      if (eslora > largo || manga > ancho) return COLORES.nocabe
+
+      // Cabe pero muy justo — posible
+      const holguraEslora = (largo - eslora) / largo
+      const holguraManga  = (ancho - manga)  / ancho
+
+      if (holguraEslora >= HOLGURA_MIN && holguraManga >= HOLGURA_MIN) {
+        return COLORES.ideal   // verde — cabe con holgura
+      }
+
+      return COLORES.posible   // naranja — cabe pero justo
+    }
 
   // Convierte puntos del polígono de zona de tierra a string SVG
   const puntosToSVG = (puntosStr) => {
@@ -184,7 +237,6 @@ function AdminMapa() {
     if (espacio.es_pasillo) return
 
     if (espacio.asignacion_id) {
-      // Espacio ocupado — muestra popup con info del barco
       const rect = canvasRef.current.getBoundingClientRect()
       setPopup({
         espacio,
@@ -192,11 +244,41 @@ function AdminMapa() {
         y: e.clientY - rect.top
       })
     } else if (solicitudSeleccionada) {
-      // Espacio libre con solicitud seleccionada — abre modal de asignación
+      // Verifica que el barco físicamente quepa antes de abrir el modal
+      const eslora = parseFloat(solicitudSeleccionada.eslora)
+      const manga  = parseFloat(solicitudSeleccionada.manga)
+      const largo  = parseFloat(espacio.alto) / 10
+      const ancho  = parseFloat(espacio.ancho) / 10
+
+      if (eslora > largo || manga > ancho) return // no cabe — ignorar clic
+
       setEspacioAsignar(espacio)
       setModalAsignar(true)
     }
   }
+
+    // Cancela la asignación y regresa a Esperando.
+    // Si la solicitud fue aprobada pero no asignada, la regresa a EN_ESPERA
+    // para que no quede en un estado huérfano sin espacio asignado.
+    const cancelarAsignacion = async () => {
+      const solicitudId = searchParams.get('solicitud')
+
+      if (!solicitudId || esReasignacion) {
+        navigate('/admin/esperando')
+        return
+      }
+
+      try {
+        await fetchAuth(`/solicitudes/${solicitudId}/estado`, {
+          method: 'PATCH',
+          body: JSON.stringify({ estado: 'EN_ESPERA' })
+        })
+      } catch (error) {
+        console.error('Error al revertir estado:', error)
+      } finally {
+        navigate('/admin/esperando')
+      }
+    }
 
   // Confirmar asignación de espacio a solicitud
   const handleAsignar = async () => {
@@ -204,6 +286,21 @@ function AdminMapa() {
 
     try {
       setGuardando(true)
+
+      // Si es reasignación, desactiva la asignación anterior primero
+      const esReasignacion = searchParams.get('reasignar') === '1'
+
+      if (esReasignacion) {
+        const resDesactivar = await fetchAuth(
+          `/mapa/asignacion/por-solicitud/${solicitudSeleccionada.id}/desactivar`,
+          { method: 'PATCH' }
+        )
+        const dataDesactivar = await resDesactivar.json()
+        if (!dataDesactivar.ok) {
+          alert(dataDesactivar.error || 'Error al desactivar asignación anterior')
+          return
+        }
+      }
 
       const res = await fetchAuth('/mapa/asignar', {
         method: 'POST',
@@ -266,11 +363,28 @@ function AdminMapa() {
   const resumen = {
     ocupados: espacios.filter(e => !e.es_pasillo && e.asignacion_id).length,
     libres:   espacios.filter(e => !e.es_pasillo && !e.asignacion_id).length,
-    ideales:  solicitudSeleccionada
+    ideales: solicitudSeleccionada
       ? espacios.filter(e => {
           if (e.es_pasillo || e.asignacion_id) return false
-          return parseFloat(solicitudSeleccionada.eslora) <= parseFloat(e.alto) &&
-                 parseFloat(solicitudSeleccionada.manga)  <= parseFloat(e.ancho)
+          const largo = parseFloat(e.alto) / 10
+          const ancho = parseFloat(e.ancho) / 10
+          const eslora = parseFloat(solicitudSeleccionada.eslora)
+          const manga  = parseFloat(solicitudSeleccionada.manga)
+          if (eslora > largo || manga > ancho) return false
+          return (largo - eslora) / largo >= HOLGURA_MIN &&
+                (ancho - manga)  / ancho >= HOLGURA_MIN
+        }).length
+      : 0,
+    posibles: solicitudSeleccionada
+      ? espacios.filter(e => {
+          if (e.es_pasillo || e.asignacion_id) return false
+          const largo = parseFloat(e.alto) / 10
+          const ancho = parseFloat(e.ancho) / 10
+          const eslora = parseFloat(solicitudSeleccionada.eslora)
+          const manga  = parseFloat(solicitudSeleccionada.manga)
+          if (eslora > largo || manga > ancho) return false
+          return (largo - eslora) / largo < HOLGURA_MIN ||
+                (ancho - manga)  / ancho < HOLGURA_MIN
         }).length
       : 0
   }
@@ -284,6 +398,18 @@ function AdminMapa() {
       <div className="mapa-header">
         <h2>Mapa Operativo</h2>
         <div className="mapa-header-right">
+
+        {/* Botón cancelar — solo visible cuando viene del flujo de aprobación */}
+        {solicitudParam && !esReasignacion && (
+          <button
+            type="button"
+            className="mapa-reset-btn"
+            onClick={cancelarAsignacion}
+          >
+            ← Cancelar
+          </button>
+        )}
+
           <button type="button" className="mapa-reset-btn" onClick={resetZoom}>
             ↺ Reset
           </button>
@@ -315,7 +441,9 @@ function AdminMapa() {
                 </div>
                 <div className="mapa-panel-row">
                   <span>TAMAÑO</span>
-                  <strong>{espacioSeleccionado.ancho}m × {espacioSeleccionado.alto}m</strong>
+                  <strong>
+                        {(parseFloat(espacioSeleccionado.alto) / 10).toFixed(1)}m × {(parseFloat(espacioSeleccionado.ancho) / 10).toFixed(1)}m
+                  </strong>
                 </div>
                 <div className="mapa-panel-row">
                   <span>ESTADO</span>
@@ -332,31 +460,21 @@ function AdminMapa() {
           <div className="mapa-panel">
             <div className="mapa-panel-label">SOLICITUD</div>
 
-            {solicitudesAprobadas.length === 0 ? (
-              <p className="mapa-panel-hint">No hay solicitudes aprobadas sin asignar.</p>
+            {!solicitudParam ? (
+              // Entrando al mapa directo — no hay solicitud activa
+              <p className="mapa-panel-hint">Accede desde Esperando para asignar un espacio.</p>
+            ) : !solicitudSeleccionada ? (
+              <p className="mapa-panel-hint">Cargando solicitud...</p>
             ) : (
-              <select
-                className="mapa-solicitud-select"
-                value={solicitudSeleccionada?.id || ''}
-                onChange={(e) => {
-                  const sol = solicitudesAprobadas.find(s => s.id === Number(e.target.value))
-                  setSolicitudSeleccionada(sol || null)
-                }}
-              >
-                <option value="">Selecciona una solicitud</option>
-                {solicitudesAprobadas.map(s => (
-                  <option key={s.id} value={s.id}>
-                    #{s.id} — {s.nombre_bote} ({s.fullname})
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {solicitudSeleccionada && (
+              // Muestra solo la info de la solicitud que viene por URL
               <div className="mapa-solicitud-info">
                 <div className="mapa-panel-row">
                   <span>Embarcación</span>
                   <strong>{solicitudSeleccionada.nombre_bote}</strong>
+                </div>
+                <div className="mapa-panel-row">
+                  <span>Cliente</span>
+                  <strong>{solicitudSeleccionada.fullname}</strong>
                 </div>
                 <div className="mapa-panel-row">
                   <span>Eslora</span>
@@ -371,7 +489,7 @@ function AdminMapa() {
                   <strong>{new Date(solicitudSeleccionada.fecha_llegada).toLocaleDateString('es-MX')}</strong>
                 </div>
                 <p className="mapa-panel-hint">
-                  Haz clic en un espacio verde para asignar.
+                  {esReasignacion ? 'Haz clic en un espacio para reasignar.' : 'Haz clic en un espacio verde para asignar.'}
                 </p>
               </div>
             )}
@@ -557,6 +675,7 @@ function AdminMapa() {
           <span className="mapa-footer-label">RESUMEN</span>
           <div className="resumen-items">
             <span className="resumen-ideal">{resumen.ideales} ideales</span>
+            <span className="resumen-posible">{resumen.posibles} posibles</span>
             <span className="resumen-ocupado">{resumen.ocupados} ocupados</span>
             <span className="resumen-libre">{resumen.libres} libres</span>
           </div>
