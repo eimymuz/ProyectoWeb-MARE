@@ -633,3 +633,28 @@
       color: white;
       font-weight: 600;
     }
+
+/* Modal de comentarios especailes por solicitud */
+
+      .modal-comentario {
+        padding: 0 24px 16px;
+        border-top: 1px solid #f0f4f8;
+      }
+
+      .modal-comentario h4 {
+        font-size: 11px;
+        font-weight: 700;
+        color: #c9a84c;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: 16px 0 8px;
+      }
+
+      .modal-comentario p {
+        font-size: 13px;
+        color: #4a6080;
+        line-height: 1.6;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px 14px;
+      }

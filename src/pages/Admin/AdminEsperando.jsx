@@ -585,6 +585,14 @@ const aprobarSolicitud = async (id) => {
               </div>
             </div>
 
+            {/* COMENTARIO DEL CLIENTE */}
+            {solicitudVer.comentario && (
+              <div className="modal-comentario">
+                <h4>Comentario del cliente</h4>
+                <p>{solicitudVer.comentario}</p>
+              </div>
+            )}
+
             <div className="solicitud-modal-footer">
               <div>
                 <button
