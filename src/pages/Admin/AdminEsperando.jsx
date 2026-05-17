@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API_URL from '../../services/api'
-import './adminEsperando.css'
+import { fetchAuth } from '../../services/api'
+import './styles/adminEsperando.css'
 import Toast from '../../components/admin/Toast'
 
 function AdminEsperando() {
@@ -28,7 +28,7 @@ function AdminEsperando() {
     try {
       setLoading(true)
 
-      const res = await fetch(`${API_URL}/solicitudes?estado=EN_ESPERA`)
+      const res = await fetchAuth(`/solicitudes?estado=EN_ESPERA`)
       const data = await res.json()
 
       if (data.ok) {
@@ -90,7 +90,7 @@ function AdminEsperando() {
 
 const aprobarSolicitud = async (id) => {
   try {
-    const res = await fetch(`${API_URL}/solicitudes/${id}/estado`, {
+    const res = await fetchAuth(`/solicitudes/${id}/estado`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -145,14 +145,14 @@ const aprobarSolicitud = async (id) => {
     }
 
     try {
-      const res = await fetch(
-        `${API_URL}/solicitudes/${solicitudRechazo.id}/estado`,
+      const res = await fetchAuth(
+        `/solicitudes/${solicitudRechazo.id}/estado`,
         {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             estado: 'RECHAZADA',
-            motivo_rechazo: motivoRechazo
+            motivo: motivoRechazo
           })
         }
       )

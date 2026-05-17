@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchAuth, obtenerAdmin } from '../../services/api'
-import './AdminUsuarios.css'
+import './styles/AdminUsuarios.css'
 
 // Página de gestión de administradores del sistema.
 // Solo los gerentes pueden crear, editar, desactivar y reactivar usuarios.

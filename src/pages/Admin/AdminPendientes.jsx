@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import API_URL from '../../services/api'
-import './AdminPendientes.css'
+import { fetchAuth } from '../../services/api'
+import './styles/adminPendientes.css'
 import Toast from '../../components/admin/Toast'
 
 
@@ -34,7 +34,7 @@ function AdminPendientes() {
     try {
       setLoading(true)
 
-      const res = await fetch(`${API_URL}/solicitudes?estado=PENDIENTE`)
+      const res = await fetchAuth(`/solicitudes?estado=PENDIENTE`)
       const data = await res.json()
 
       if (data.ok) {
@@ -49,7 +49,7 @@ function AdminPendientes() {
 
   const cambiarEstado = async (id, estado, motivoRechazo = '') => {
     try {
-      const res = await fetch(`${API_URL}/solicitudes/${id}/estado`, {
+      const res = await fetchAuth(`/solicitudes/${id}/estado`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

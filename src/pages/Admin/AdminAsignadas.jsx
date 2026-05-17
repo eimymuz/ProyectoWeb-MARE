@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAuth } from '../../services/api'
-import './AdminAsignadas.css'
+import './styles/AdminAsignadas.css'
 import Toast from '../../components/admin/Toast'
 
 // Página de embarcaciones con espacio asignado en la marina.

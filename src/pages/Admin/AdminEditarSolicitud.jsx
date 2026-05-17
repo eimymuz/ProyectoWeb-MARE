@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
-import API_URL from '../../services/api'
-import './AdminEditarSolicitud.css'
+import { fetchAuth } from '../../services/api'
+import './styles/adminEditarSolicitud.css'
 import Toast from '../../components/admin/Toast'
 
 
@@ -89,8 +89,8 @@ function AdminEditarSolicitud() {
 
   const obtenerSolicitud = async () => {
     try {
-      const res = await fetch(`${API_URL}/solicitudes/${id}`)
-      const data = await res.json()
+      const res = await fetchAuth(`/solicitudes/${id}`)
+        const data = await res.json()
 
       if (data.ok) {
         setForm({
@@ -168,7 +168,7 @@ function AdminEditarSolicitud() {
     try {
       setGuardando(true)
 
-      const res = await fetch(`${API_URL}/solicitudes/${id}`, {
+      const res = await fetchAuth(`/solicitudes/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

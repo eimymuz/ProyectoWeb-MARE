@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react'
 import { fetchAuth } from '../../services/api'
-import './AdminMapa.css'
+import './styles/AdminMapa.css'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 
 

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { obtenerAdmin, eliminarToken } from '../../services/api'
 import { Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 import {
   Clock3,
@@ -40,9 +41,9 @@ function AdminNavbar() {
       <div className="admin-header-inner">
 
         {/* LOGO */}
-        <div className="admin-logo">
+        <Link to="/admin" className="admin-logo">
           MARE
-        </div>
+        </Link>
 
         {/* NAV */}
         <nav className="admin-nav">

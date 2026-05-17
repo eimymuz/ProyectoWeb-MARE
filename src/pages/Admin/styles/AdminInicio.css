@@ -1,0 +1,212 @@
+.inicio-admin-page {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* =========================
+   GRID SUPERIOR
+========================= */
+
+.inicio-top-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 22px;
+}
+
+/* =========================
+   TARJETAS
+========================= */
+
+.inicio-card {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  border: 1px solid #dbe3ec;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+}
+
+/* =========================
+   OCUPACION
+========================= */
+
+.ocupacion-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.circle-progress {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 10px solid #d4af37;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 18px;
+}
+
+.circle-progress span {
+  font-size: 30px;
+  font-weight: 700;
+  color: #2b124c;
+}
+
+.ocupacion-card h3 {
+  margin: 0;
+  color: #2b124c;
+}
+
+.ocupacion-card p {
+  color: #7b8190;
+}
+
+.ocupacion-info {
+  display: flex;
+  gap: 50px;
+  margin-top: 22px;
+}
+
+.ocupacion-info div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ocupacion-info strong {
+  font-size: 32px;
+  color: #2b124c;
+}
+
+.ocupacion-info span {
+  font-size: 13px;
+  color: #7b8190;
+}
+
+/* =========================
+   CLIMA
+========================= */
+
+.clima-content {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.clima-icon {
+  font-size: 90px;
+}
+
+.clima-info small {
+  color: #6c7380;
+  font-weight: 700;
+}
+
+.clima-info h2 {
+  margin: 10px 0 20px;
+  font-size: 44px;
+  color: #2b124c;
+}
+
+.clima-stats {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.clima-stats div {
+  display: flex;
+  flex-direction: column;
+}
+
+.clima-stats span {
+  font-size: 12px;
+  color: #7b8190;
+}
+
+.clima-stats strong {
+  color: #2b124c;
+}
+
+.clima-alerta {
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 600;
+}
+
+.clima-alerta.ok {
+  background: #e9f7ee;
+  color: #1d7d48;
+}
+
+/* =========================
+   KPIS
+========================= */
+
+.inicio-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+.mini-card span {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+.mini-card h2 {
+  font-size: 52px;
+  margin: 12px 0;
+  color: #2b124c;
+}
+
+.mini-card p {
+  margin: 0;
+  color: #7b8190;
+}
+
+/* =========================
+   MAPA
+========================= */
+
+.mapa-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mapa-header h3 {
+  margin: 0;
+  color: #2b124c;
+}
+
+.mapa-header span {
+  color: #7b8190;
+}
+
+.mapa-header button {
+  border: 1px solid #d4af37;
+  background: transparent;
+  color: #2b124c;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.mapa-box {
+  margin-top: 20px;
+  height: 420px;
+  border-radius: 18px;
+  background: #eef3f8;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #7b8190;
+  font-size: 24px;
+}
