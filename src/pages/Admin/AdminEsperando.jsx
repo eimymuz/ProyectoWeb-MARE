@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAuth } from '../../services/api'
-import './styles/adminEsperando.css'
+import './styles/AdminEsperando.css'
 import Toast from '../../components/admin/Toast'
 
 function AdminEsperando() {
@@ -20,15 +20,22 @@ function AdminEsperando() {
   const [motivoRechazo, setMotivoRechazo] = useState('')
   const [solicitudVer, setSolicitudVer] = useState(null)
 
+  const [paginaActual, setPaginaActual] = useState(1)
+  const ITEMS_POR_PAGINA = 10
+
   useEffect(() => {
     obtenerSolicitudes()
   }, [])
+
+  useEffect(() => {
+    setPaginaActual(1)
+  }, [busqueda, tipoBarco, fecha])
 
   const obtenerSolicitudes = async () => {
     try {
       setLoading(true)
 
-      const res = await fetchAuth(`/solicitudes?estado=EN_ESPERA`)
+      const res = await fetchAuth('/solicitudes?estado=EN_ESPERA')
       const data = await res.json()
 
       if (data.ok) {
@@ -42,80 +49,86 @@ function AdminEsperando() {
   }
 
   const contactarCliente = (solicitud) => {
-    const email = solicitud.email
-    const cliente = solicitud.fullname
-    const embarcacion = solicitud.nombre_bote
-
-    if (!email) {
-      alert('Esta solicitud no tiene correo registrado.')
+    if (!solicitud.email) {
+      setToast({
+        mensaje: 'Esta solicitud no tiene correo registrado.',
+        tipo: 'warning'
+      })
       return
     }
 
-    const asunto = `Solicitud — ${embarcacion}`
+    const asunto = `Solicitud — ${solicitud.nombre_bote}`
 
     const cuerpo = `
-      Estimado/a ${cliente}:
+Estimado/a ${solicitud.fullname}:
 
-      Le contactamos respecto a su solicitud para la embarcación ${embarcacion}.
+Le contactamos respecto a su solicitud para la embarcación ${solicitud.nombre_bote}.
 
-      Su solicitud se encuentra actualmente en estado EN ESPERA.
+Su solicitud se encuentra actualmente en estado EN ESPERA.
 
-      Quedamos atentos a la información necesaria para continuar con el proceso de asignación.
+Quedamos atentos a la información necesaria para continuar con el proceso de asignación.
 
-      Saludos cordiales.
-      MARE - Marina Puerto de la Navidad
-          `
+Saludos cordiales.
+MARE - Marina Puerto de la Navidad
+    `
 
     const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
-      email
+      solicitud.email
     )}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
     window.open(gmailUrl, '_blank')
   }
 
   const revisarCliente = (solicitud) => {
-    const email = solicitud.email
-
-    if (!email) {
-      alert('Esta solicitud no tiene correo registrado.')
+    if (!solicitud.email) {
+      setToast({
+        mensaje: 'Esta solicitud no tiene correo registrado.',
+        tipo: 'warning'
+      })
       return
     }
 
     const gmailSearchUrl = `https://mail.google.com/mail/u/0/#search/${encodeURIComponent(
-      email
+      solicitud.email
     )}`
 
     window.open(gmailSearchUrl, '_blank')
   }
 
-const aprobarSolicitud = async (id) => {
-  try {
-    const res = await fetchAuth(`/solicitudes/${id}/estado`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        estado: 'APROBADA'
+  const aprobarSolicitud = async (id) => {
+    try {
+      const res = await fetchAuth(`/solicitudes/${id}/estado`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          estado: 'APROBADA'
+        })
       })
-    })
 
-    const data = await res.json()
+      const data = await res.json()
 
-    if (!data.ok) {
-      alert(data.error || 'No se pudo aprobar')
-      return
+      if (!data.ok) {
+        setToast({
+          mensaje: data.error || 'No se pudo aprobar la solicitud',
+          tipo: 'error'
+        })
+        return
+      }
+
+      cerrarModalVer()
+
+      navigate(`/admin/mapa?solicitud=${id}`)
+    } catch (error) {
+      console.error(error)
+
+      setToast({
+        mensaje: 'Error de conexión con el servidor',
+        tipo: 'error'
+      })
     }
-
-    cerrarModalVer()
-
-    // Redirige al mapa con la solicitud preseleccionada
-    navigate(`/admin/mapa?solicitud=${id}`)
-  } catch (error) {
-    console.error(error)
-    alert('Error de conexión')
   }
-}
 
   const abrirModalRechazo = (solicitud) => {
     setSolicitudRechazo(solicitud)
@@ -127,40 +140,50 @@ const aprobarSolicitud = async (id) => {
     setMotivoRechazo('')
   }
 
-  // Validaciones para rechazar solicitud: motivo requerido, mínimo 10 caracteres, máximo 500 caracteres
   const rechazarSolicitud = async () => {
     if (!motivoRechazo.trim()) {
-      setToast({ mensaje: 'Debes escribir el motivo del rechazo', tipo: 'error' })
+      setToast({
+        mensaje: 'Debes escribir el motivo del rechazo',
+        tipo: 'error'
+      })
       return
     }
 
     if (motivoRechazo.trim().length < 10) {
-      setToast({ mensaje: 'El motivo debe tener al menos 10 caracteres', tipo: 'error' })
+      setToast({
+        mensaje: 'El motivo debe tener al menos 10 caracteres',
+        tipo: 'error'
+      })
       return
     }
 
     if (motivoRechazo.length > 500) {
-      setToast({ mensaje: 'El motivo no puede superar los 500 caracteres', tipo: 'warning' })
+      setToast({
+        mensaje: 'El motivo no puede superar los 500 caracteres',
+        tipo: 'warning'
+      })
       return
     }
 
     try {
-      const res = await fetchAuth(
-        `/solicitudes/${solicitudRechazo.id}/estado`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            estado: 'RECHAZADA',
-            motivo: motivoRechazo
-          })
-        }
-      )
+      const res = await fetchAuth(`/solicitudes/${solicitudRechazo.id}/estado`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          estado: 'RECHAZADA',
+          motivo: motivoRechazo
+        })
+      })
 
       const data = await res.json()
 
       if (!data.ok) {
-        setToast({ mensaje: data.error || 'No se pudo rechazar la solicitud', tipo: 'error' })
+        setToast({
+          mensaje: data.error || 'No se pudo rechazar la solicitud',
+          tipo: 'error'
+        })
         return
       }
 
@@ -168,7 +191,11 @@ const aprobarSolicitud = async (id) => {
       obtenerSolicitudes()
     } catch (error) {
       console.error(error)
-      setToast({ mensaje: 'Error de conexión', tipo: 'error' })
+
+      setToast({
+        mensaje: 'Error de conexión',
+        tipo: 'error'
+      })
     }
   }
 
@@ -182,8 +209,13 @@ const aprobarSolicitud = async (id) => {
 
   const editarSolicitud = (solicitud) => {
     cerrarModalVer()
-
     navigate(`/admin/editar/${solicitud.id}?from=esperando`)
+  }
+
+  const limpiarFiltros = () => {
+    setBusqueda('')
+    setTipoBarco('')
+    setFecha('')
   }
 
   const formatearFecha = (fecha) => {
@@ -197,7 +229,7 @@ const aprobarSolicitud = async (id) => {
   }
 
   const formatearSiNo = (valor) => {
-    return valor ? 'Sí' : 'No'
+    return Number(valor) === 1 || valor === true ? 'Sí' : 'No'
   }
 
   const solicitudesFiltradas = solicitudes.filter((s) => {
@@ -216,23 +248,12 @@ const aprobarSolicitud = async (id) => {
     return coincideBusqueda && coincideTipo && coincideFecha
   })
 
-
-  // Paginación — 10 solicitudes por página
-  const [paginaActual, setPaginaActual] = useState(1)
-  const ITEMS_POR_PAGINA = 10
-
-  // Calcula el total de páginas y las solicitudes de la página actual
   const totalPaginas = Math.ceil(solicitudesFiltradas.length / ITEMS_POR_PAGINA)
 
   const solicitudesPaginadas = solicitudesFiltradas.slice(
     (paginaActual - 1) * ITEMS_POR_PAGINA,
     paginaActual * ITEMS_POR_PAGINA
   )
-
-  // Resetea a página 1 cuando cambian los filtros
-  useEffect(() => {
-    setPaginaActual(1)
-  }, [busqueda, tipoBarco, fecha])
 
   return (
     <div className="admin-esperando-page">
@@ -274,26 +295,22 @@ const aprobarSolicitud = async (id) => {
                 <option value="VELERO">Velero</option>
                 <option value="LANCHA">Lancha</option>
                 <option value="CATAMARÁN">Catamarán</option>
+                <option value="MOTONAVE">Motonave</option>
               </select>
             </div>
 
-            <button type="button" className="admin-esperando-filter-btn">
-              Filtrar
+            <button
+              type="button"
+              className="admin-esperando-filter-btn"
+              onClick={limpiarFiltros}
+            >
+              Limpiar filtros
             </button>
           </div>
 
           <div>
             <div className="admin-esperando-group">
-              <label>Fecha</label>
-
-              <div className="admin-date-tabs">
-                <button type="button" className="active">
-                  ✦ Solicitud
-                </button>
-                <button type="button">→ Llegada</button>
-                <button type="button">← Salida</button>
-                <button type="button">↔ Estancia</button>
-              </div>
+              <label>Fecha de llegada</label>
 
               <input
                 type="date"
@@ -302,17 +319,8 @@ const aprobarSolicitud = async (id) => {
               />
 
               <small>
-                ℹ Fecha exacta de solicitud · activa ↔ para rango
+                Filtra por fecha exacta de llegada.
               </small>
-            </div>
-
-            <div className="admin-esperando-group">
-              <label>Ordenar por</label>
-
-              <select>
-                <option>Más reciente</option>
-                <option>Más antiguo</option>
-              </select>
             </div>
           </div>
         </div>
@@ -349,12 +357,21 @@ const aprobarSolicitud = async (id) => {
             ) : (
               solicitudesPaginadas.map((solicitud) => (
                 <tr key={solicitud.id}>
-                  <td className="admin-esperando-id">#{solicitud.id}</td>
+                  <td className="admin-esperando-id">
+                    #{solicitud.id}
+                  </td>
+
                   <td>{solicitud.nombre_bote}</td>
                   <td>{solicitud.fullname}</td>
                   <td>{solicitud.tipo_barco}</td>
-                  <td>{formatearFecha(solicitud.fecha_llegada)}</td>
-                  <td>{formatearFecha(solicitud.fecha_salida)}</td>
+
+                  <td>
+                    {formatearFecha(solicitud.fecha_llegada)}
+                  </td>
+
+                  <td>
+                    {formatearFecha(solicitud.fecha_salida)}
+                  </td>
 
                   <td>
                     <span className="admin-esperando-badge">
@@ -411,20 +428,19 @@ const aprobarSolicitud = async (id) => {
           </tbody>
         </table>
 
-        {/* PAGINACIÓN */}
         {totalPaginas > 1 && (
           <div className="paginacion">
             <button
               type="button"
               className="pag-btn"
-              onClick={() => setPaginaActual(p => Math.max(p - 1, 1))}
+              onClick={() => setPaginaActual((p) => Math.max(p - 1, 1))}
               disabled={paginaActual === 1}
             >
               ‹ Anterior
             </button>
 
             <div className="pag-numeros">
-              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((num) => (
                 <button
                   key={num}
                   type="button"
@@ -439,24 +455,30 @@ const aprobarSolicitud = async (id) => {
             <button
               type="button"
               className="pag-btn"
-              onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))}
+              onClick={() =>
+                setPaginaActual((p) => Math.min(p + 1, totalPaginas))
+              }
               disabled={paginaActual === totalPaginas}
             >
               Siguiente ›
             </button>
           </div>
         )}
-
       </div>
 
       {solicitudRechazo && (
-        <div className="reject-modal-overlay">
-          <div className="reject-modal">
+        <div
+          className="solicitud-modal-overlay"
+          onClick={cerrarModalRechazo}
+        >
+          <div
+            className="reject-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3>Rechazar solicitud</h3>
 
             <p>
-              Embarcación:{' '}
-              <strong>{solicitudRechazo.nombre_bote}</strong>
+              Embarcación: <strong>{solicitudRechazo.nombre_bote}</strong>
             </p>
 
             <label>
@@ -469,16 +491,31 @@ const aprobarSolicitud = async (id) => {
               placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
               rows="5"
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-              {motivoRechazo.trim().length > 0 && motivoRechazo.trim().length < 10 && (
-                <span style={{ fontSize: '11px', color: '#c0392b' }}>Mínimo 10 caracteres</span>
-              )}
-              <span style={{ fontSize: '11px', color: motivoRechazo.length > 500 ? '#c0392b' : '#aaa', marginLeft: 'auto' }}>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginTop: '3px'
+              }}
+            >
+              {motivoRechazo.trim().length > 0 &&
+                motivoRechazo.trim().length < 10 && (
+                  <span style={{ fontSize: '11px', color: '#c0392b' }}>
+                    Mínimo 10 caracteres
+                  </span>
+                )}
+
+              <span
+                style={{
+                  fontSize: '11px',
+                  color: motivoRechazo.length > 500 ? '#c0392b' : '#aaa',
+                  marginLeft: 'auto'
+                }}
+              >
                 {motivoRechazo.length}/500
               </span>
             </div>
-
-
 
             <div className="reject-modal-actions">
               <button
@@ -502,8 +539,14 @@ const aprobarSolicitud = async (id) => {
       )}
 
       {solicitudVer && (
-        <div className="solicitud-modal-overlay">
-          <div className="solicitud-modal">
+        <div
+          className="solicitud-modal-overlay"
+          onClick={cerrarModalVer}
+        >
+          <div
+            className="solicitud-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="solicitud-modal-header">
               <div>
                 <div className="modal-title-row">
@@ -573,9 +616,7 @@ const aprobarSolicitud = async (id) => {
                 <div className="modal-item">
                   <span>1ª entrada MX</span>
                   <strong className="modal-gold">
-                    {formatearSiNo(
-                      solicitudVer.primera_entrada_mexico
-                    )}
+                    {formatearSiNo(solicitudVer.primera_entrada_mexico)}
                   </strong>
                 </div>
               </div>
@@ -606,7 +647,6 @@ const aprobarSolicitud = async (id) => {
               </div>
             </div>
 
-            {/* COMENTARIO DEL CLIENTE */}
             {solicitudVer.comentario && (
               <div className="modal-comentario">
                 <h4>Comentario del cliente</h4>
@@ -618,10 +658,26 @@ const aprobarSolicitud = async (id) => {
               <div>
                 <button
                   type="button"
+                  className="btn-contactar"
+                  onClick={() => contactarCliente(solicitudVer)}
+                >
+                  Contactar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-revisar"
+                  onClick={() => revisarCliente(solicitudVer)}
+                >
+                  Revisar
+                </button>
+
+                <button
+                  type="button"
                   className="btn-asignar"
                   onClick={() => aprobarSolicitud(solicitudVer.id)}
                 >
-                  Aprobar
+                  Asignar
                 </button>
 
                 <button
@@ -663,7 +719,6 @@ const aprobarSolicitud = async (id) => {
           onClose={() => setToast(null)}
         />
       )}
-
     </div>
   )
 }

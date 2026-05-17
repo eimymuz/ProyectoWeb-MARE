@@ -1,40 +1,47 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAuth } from '../../services/api'
-import './styles/adminPendientes.css'
+import './styles/AdminPendientes.css'
 import Toast from '../../components/admin/Toast'
-
 
 function AdminPendientes() {
   const navigate = useNavigate()
 
-  // Estados para solicitudes, carga, filtros, modales y toast
+  // Estados principales
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
   const [toast, setToast] = useState(null)
 
-
+  // Filtros
   const [busqueda, setBusqueda] = useState('')
   const [tipoBarco, setTipoBarco] = useState('')
   const [primeraEntrada, setPrimeraEntrada] = useState(false)
   const [fecha, setFecha] = useState('')
 
+  // Modales
   const [solicitudRechazo, setSolicitudRechazo] = useState(null)
   const [motivo, setMotivo] = useState('')
   const [solicitudVer, setSolicitudVer] = useState(null)
+
+  // Paginación
+  const [paginaActual, setPaginaActual] = useState(1)
+  const ITEMS_POR_PAGINA = 10
 
   useEffect(() => {
     obtenerSolicitudes()
   }, [])
 
-
+  // Reinicia la paginación al cambiar filtros
+  useEffect(() => {
+    setPaginaActual(1)
+  }, [busqueda, tipoBarco, primeraEntrada, fecha])
 
   const obtenerSolicitudes = async () => {
     try {
       setLoading(true)
 
-      const res = await fetchAuth(`/solicitudes?estado=PENDIENTE`)
+      const res = await fetchAuth('/solicitudes?estado=PENDIENTE')
       const data = await res.json()
 
       if (data.ok) {
@@ -63,24 +70,30 @@ function AdminPendientes() {
       const data = await res.json()
 
       if (!data.ok) {
-        alert(data.error || 'No se pudo actualizar la solicitud')
+        setToast({
+          mensaje: data.error || 'No se pudo actualizar la solicitud',
+          tipo: 'error'
+        })
         return
       }
 
       setSolicitudRechazo(null)
-      setMotivo('')
       setSolicitudVer(null)
+      setMotivo('')
 
       obtenerSolicitudes()
     } catch (error) {
       console.error(error)
-      alert('Error de conexión con el servidor')
+
+      setToast({
+        mensaje: 'Error de conexión con el servidor',
+        tipo: 'error'
+      })
     }
   }
 
   const editarSolicitud = (solicitud) => {
     setSolicitudVer(null)
-
     navigate(`/admin/editar/${solicitud.id}?from=pendientes`)
   }
 
@@ -97,7 +110,8 @@ function AdminPendientes() {
   const solicitudesFiltradas = solicitudes.filter((s) => {
     const texto = `${s.nombre_bote} ${s.fullname}`.toLowerCase()
 
-    const coincideBusqueda = texto.includes(busqueda.toLowerCase())
+    const coincideBusqueda =
+      texto.includes(busqueda.toLowerCase())
 
     const coincideTipo = tipoBarco
       ? s.tipo_barco?.toUpperCase() === tipoBarco
@@ -119,31 +133,24 @@ function AdminPendientes() {
     )
   })
 
-
-    // Paginación — 10 solicitudes por página
-  const [paginaActual, setPaginaActual] = useState(1)
-  const ITEMS_POR_PAGINA = 10
-
-  // Calcula el total de páginas y las solicitudes de la página actual
-  const totalPaginas = Math.ceil(solicitudesFiltradas.length / ITEMS_POR_PAGINA)
+  const totalPaginas = Math.ceil(
+    solicitudesFiltradas.length / ITEMS_POR_PAGINA
+  )
 
   const solicitudesPaginadas = solicitudesFiltradas.slice(
     (paginaActual - 1) * ITEMS_POR_PAGINA,
     paginaActual * ITEMS_POR_PAGINA
   )
 
-  // Resetea a página 1 cuando cambian los filtros
-  useEffect(() => {
-    setPaginaActual(1)
-  }, [busqueda, tipoBarco, primeraEntrada, fecha])
-
-
   return (
     <div className="admin-pendientes-page">
+
+      {/* HEADER */}
       <div className="admin-pendientes-header">
         <h2>Solicitudes pendientes</h2>
       </div>
 
+      {/* TOGGLE FILTROS */}
       <button
         type="button"
         className="admin-pendientes-toggle"
@@ -153,9 +160,12 @@ function AdminPendientes() {
         <span>{mostrarFiltros ? '▲' : '▼'}</span>
       </button>
 
+      {/* FILTROS */}
       {mostrarFiltros && (
         <div className="admin-pendientes-filters">
+
           <div>
+
             <div className="admin-filter-group">
               <label>Buscar</label>
 
@@ -178,6 +188,7 @@ function AdminPendientes() {
                 <option value="VELERO">Velero</option>
                 <option value="LANCHA">Lancha</option>
                 <option value="CATAMARÁN">Catamarán</option>
+                <option value="MOTONAVE">Motonave</option>
               </select>
             </div>
 
@@ -185,13 +196,17 @@ function AdminPendientes() {
               <input
                 type="checkbox"
                 checked={primeraEntrada}
-                onChange={(e) => setPrimeraEntrada(e.target.checked)}
+                onChange={(e) =>
+                  setPrimeraEntrada(e.target.checked)
+                }
               />
               Primera entrada a México
             </label>
+
           </div>
 
           <div>
+
             <div className="admin-filter-group">
               <label>Fecha de llegada</label>
 
@@ -214,12 +229,17 @@ function AdminPendientes() {
             >
               Limpiar filtros
             </button>
+
           </div>
+
         </div>
       )}
 
+      {/* TABLA */}
       <div className="admin-pendientes-table">
+
         <table>
+
           <thead>
             <tr>
               <th>#</th>
@@ -234,28 +254,50 @@ function AdminPendientes() {
           </thead>
 
           <tbody>
+
             {loading ? (
               <tr>
-                <td colSpan="8" className="admin-empty">
+                <td
+                  colSpan="8"
+                  className="admin-empty"
+                >
                   Cargando solicitudes...
                 </td>
               </tr>
             ) : solicitudesFiltradas.length === 0 ? (
               <tr>
-                <td colSpan="8" className="admin-empty">
+                <td
+                  colSpan="8"
+                  className="admin-empty"
+                >
                   No hay solicitudes en este estado.
                 </td>
               </tr>
             ) : (
               solicitudesPaginadas.map((solicitud) => (
                 <tr key={solicitud.id}>
-                  <td className="admin-id">#{solicitud.id}</td>
+
+                  <td className="admin-id">
+                    #{solicitud.id}
+                  </td>
 
                   <td>{solicitud.nombre_bote}</td>
+
                   <td>{solicitud.fullname}</td>
+
                   <td>{solicitud.tipo_barco}</td>
-                  <td>{formatearFecha(solicitud.fecha_llegada)}</td>
-                  <td>{formatearFecha(solicitud.fecha_salida)}</td>
+
+                  <td>
+                    {formatearFecha(
+                      solicitud.fecha_llegada
+                    )}
+                  </td>
+
+                  <td>
+                    {formatearFecha(
+                      solicitud.fecha_salida
+                    )}
+                  </td>
 
                   <td>
                     <span className="admin-badge">
@@ -265,11 +307,15 @@ function AdminPendientes() {
 
                   <td>
                     <div className="admin-actions">
+
                       <button
                         type="button"
                         className="btn-wait"
                         onClick={() =>
-                          cambiarEstado(solicitud.id, 'EN_ESPERA')
+                          cambiarEstado(
+                            solicitud.id,
+                            'EN_ESPERA'
+                          )
                         }
                       >
                         En espera
@@ -278,7 +324,9 @@ function AdminPendientes() {
                       <button
                         type="button"
                         className="btn-reject"
-                        onClick={() => setSolicitudRechazo(solicitud)}
+                        onClick={() =>
+                          setSolicitudRechazo(solicitud)
+                        }
                       >
                         Rechazar
                       </button>
@@ -286,119 +334,184 @@ function AdminPendientes() {
                       <button
                         type="button"
                         className="btn-view"
-                        onClick={() => setSolicitudVer(solicitud)}
+                        onClick={() =>
+                          setSolicitudVer(solicitud)
+                        }
                       >
                         Ver
                       </button>
+
                     </div>
                   </td>
+
                 </tr>
               ))
             )}
+
           </tbody>
+
         </table>
-          {/* PAGINACIÓN */}
-          {totalPaginas > 1 && (
-            <div className="paginacion">
-              <button
-                type="button"
-                className="pag-btn"
-                onClick={() => setPaginaActual(p => Math.max(p - 1, 1))}
-                disabled={paginaActual === 1}
-              >
-                ‹ Anterior
-              </button>
 
-              <div className="pag-numeros">
-                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
-                  <button
-                    key={num}
-                    type="button"
-                    className={`pag-num ${paginaActual === num ? 'active' : ''}`}
-                    onClick={() => setPaginaActual(num)}
-                  >
-                    {num}
-                  </button>
-                ))}
-              </div>
+        {/* PAGINACIÓN */}
+        {totalPaginas > 1 && (
+          <div className="paginacion">
 
-              <button
-                type="button"
-                className="pag-btn"
-                onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))}
-                disabled={paginaActual === totalPaginas}
-              >
-                Siguiente ›
-              </button>
+            <button
+              type="button"
+              className="pag-btn"
+              onClick={() =>
+                setPaginaActual((p) =>
+                  Math.max(p - 1, 1)
+                )
+              }
+              disabled={paginaActual === 1}
+            >
+              ‹ Anterior
+            </button>
+
+            <div className="pag-numeros">
+
+              {Array.from(
+                { length: totalPaginas },
+                (_, i) => i + 1
+              ).map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  className={`pag-num ${
+                    paginaActual === num
+                      ? 'active'
+                      : ''
+                  }`}
+                  onClick={() =>
+                    setPaginaActual(num)
+                  }
+                >
+                  {num}
+                </button>
+              ))}
+
             </div>
-          )}
+
+            <button
+              type="button"
+              className="pag-btn"
+              onClick={() =>
+                setPaginaActual((p) =>
+                  Math.min(p + 1, totalPaginas)
+                )
+              }
+              disabled={
+                paginaActual === totalPaginas
+              }
+            >
+              Siguiente ›
+            </button>
+
+          </div>
+        )}
+
       </div>
 
+      {/* MODAL VER */}
       {solicitudVer && (
         <div
           className="solicitud-modal-overlay"
-          onClick={() => setSolicitudVer(null)}
+          onClick={() =>
+            setSolicitudVer(null)
+          }
         >
+
           <div
             className="solicitud-modal"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
+
+            {/* HEADER */}
             <div className="solicitud-modal-header">
+
               <div>
+
                 <div className="modal-title-row">
-                  <h2>{solicitudVer.nombre_bote}</h2>
+
+                  <h2>
+                    {solicitudVer.nombre_bote}
+                  </h2>
 
                   <span className="modal-status">
                     Pendiente
                   </span>
+
                 </div>
 
                 <p>
-                  {solicitudVer.fullname} · Solicitud #
+                  {solicitudVer.fullname} ·
+                  Solicitud #
                   {solicitudVer.id}
                 </p>
+
               </div>
 
               <button
                 type="button"
                 className="modal-close"
-                onClick={() => setSolicitudVer(null)}
+                onClick={() =>
+                  setSolicitudVer(null)
+                }
               >
                 ×
               </button>
+
             </div>
 
+            {/* BODY */}
             <div className="solicitud-modal-body">
+
               <div className="modal-column">
+
                 <h4>Embarcación</h4>
 
                 <div className="modal-item">
                   <span>Tipo</span>
-                  <strong>{solicitudVer.tipo_barco}</strong>
+                  <strong>
+                    {solicitudVer.tipo_barco}
+                  </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>Eslora</span>
-                  <strong>{solicitudVer.eslora} m</strong>
+                  <strong>
+                    {solicitudVer.eslora} m
+                  </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>Manga</span>
-                  <strong>{solicitudVer.manga} m</strong>
+                  <strong>
+                    {solicitudVer.manga} m
+                  </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>Calado</span>
-                  <strong>{solicitudVer.calado} m</strong>
+                  <strong>
+                    {solicitudVer.calado} m
+                  </strong>
                 </div>
+
               </div>
 
               <div className="modal-column">
+
                 <h4>Cliente</h4>
 
                 <div className="modal-item">
                   <span>Nombre</span>
-                  <strong>{solicitudVer.fullname}</strong>
+                  <strong>
+                    {solicitudVer.fullname}
+                  </strong>
                 </div>
 
                 <div className="modal-item">
@@ -410,61 +523,91 @@ function AdminPendientes() {
 
                 <div className="modal-item">
                   <span>Teléfono</span>
-                  <strong>{solicitudVer.telefono}</strong>
+                  <strong>
+                    {solicitudVer.telefono}
+                  </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>1ª entrada MX</span>
 
                   <strong className="modal-gold">
-                    {Number(solicitudVer.primera_entrada_mexico) === 1
+                    {Number(
+                      solicitudVer.primera_entrada_mexico
+                    ) === 1
                       ? 'Sí'
                       : 'No'}
                   </strong>
                 </div>
+
               </div>
 
               <div className="modal-column">
+
                 <h4>Estancia</h4>
 
                 <div className="modal-item">
                   <span>Solicitud</span>
+
                   <strong>
-                    {formatearFecha(solicitudVer.fecha_solicitud)}
+                    {formatearFecha(
+                      solicitudVer.fecha_solicitud
+                    )}
                   </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>Llegada</span>
+
                   <strong>
-                    {formatearFecha(solicitudVer.fecha_llegada)}
+                    {formatearFecha(
+                      solicitudVer.fecha_llegada
+                    )}
                   </strong>
                 </div>
 
                 <div className="modal-item">
                   <span>Salida</span>
+
                   <strong>
-                    {formatearFecha(solicitudVer.fecha_salida)}
+                    {formatearFecha(
+                      solicitudVer.fecha_salida
+                    )}
                   </strong>
                 </div>
+
               </div>
+
             </div>
 
-            {/* COMENTARIO DEL CLIENTE */}
+            {/* COMENTARIO */}
             {solicitudVer.comentario && (
               <div className="modal-comentario">
-                <h4>Comentario del cliente</h4>
-                <p>{solicitudVer.comentario}</p>
+
+                <h4>
+                  Comentario del cliente
+                </h4>
+
+                <p>
+                  {solicitudVer.comentario}
+                </p>
+
               </div>
             )}
 
+            {/* FOOTER */}
             <div className="solicitud-modal-footer">
+
               <div>
+
                 <button
                   type="button"
                   className="btn-wait"
                   onClick={() =>
-                    cambiarEstado(solicitudVer.id, 'EN_ESPERA')
+                    cambiarEstado(
+                      solicitudVer.id,
+                      'EN_ESPERA'
+                    )
                   }
                 >
                   En espera
@@ -474,7 +617,9 @@ function AdminPendientes() {
                   type="button"
                   className="btn-reject"
                   onClick={() => {
-                    setSolicitudRechazo(solicitudVer)
+                    setSolicitudRechazo(
+                      solicitudVer
+                    )
                     setSolicitudVer(null)
                   }}
                 >
@@ -484,24 +629,35 @@ function AdminPendientes() {
                 <button
                   type="button"
                   className="btn-view"
-                  onClick={() => editarSolicitud(solicitudVer)}
+                  onClick={() =>
+                    editarSolicitud(
+                      solicitudVer
+                    )
+                  }
                 >
                   Editar
                 </button>
+
               </div>
 
               <button
                 type="button"
                 className="btn-view"
-                onClick={() => setSolicitudVer(null)}
+                onClick={() =>
+                  setSolicitudVer(null)
+                }
               >
                 Cerrar
               </button>
+
             </div>
+
           </div>
+
         </div>
       )}
 
+      {/* MODAL RECHAZO */}
       {solicitudRechazo && (
         <div
           className="reject-modal-overlay"
@@ -510,15 +666,23 @@ function AdminPendientes() {
             setMotivo('')
           }}
         >
+
           <div
             className="reject-modal"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) =>
+              e.stopPropagation()
+            }
           >
+
             <h3>Rechazar solicitud</h3>
 
             <p>
               Embarcación:{' '}
-              <strong>{solicitudRechazo.nombre_bote}</strong>
+              <strong>
+                {
+                  solicitudRechazo.nombre_bote
+                }
+              </strong>
             </p>
 
             <label>
@@ -527,19 +691,51 @@ function AdminPendientes() {
 
             <textarea
               value={motivo}
-              onChange={(e) => setMotivo(e.target.value)}
+              onChange={(e) =>
+                setMotivo(e.target.value)
+              }
               placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
-              {motivo.trim().length > 0 && motivo.trim().length < 10 && (
-                <span style={{ fontSize: '11px', color: '#c0392b' }}>Mínimo 10 caracteres</span>
-              )}
-              <span style={{ fontSize: '11px', color: motivo.length > 500 ? '#c0392b' : '#aaa', marginLeft: 'auto' }}>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent:
+                  'space-between',
+                marginTop: '3px'
+              }}
+            >
+
+              {motivo.trim().length > 0 &&
+                motivo.trim().length <
+                  10 && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      color: '#c0392b'
+                    }}
+                  >
+                    Mínimo 10 caracteres
+                  </span>
+                )}
+
+              <span
+                style={{
+                  fontSize: '11px',
+                  color:
+                    motivo.length > 500
+                      ? '#c0392b'
+                      : '#aaa',
+                  marginLeft: 'auto'
+                }}
+              >
                 {motivo.length}/500
               </span>
+
             </div>
 
             <div className="reject-modal-actions">
+
               <button
                 type="button"
                 className="btn-cancel"
@@ -555,18 +751,35 @@ function AdminPendientes() {
                 type="button"
                 className="btn-reject"
                 onClick={() => {
+
                   if (!motivo.trim()) {
-                    setToast({ mensaje: 'Debe escribir el motivo del rechazo', tipo: 'error' })
+                    setToast({
+                      mensaje:
+                        'Debe escribir el motivo del rechazo',
+                      tipo: 'error'
+                    })
                     return
                   }
 
-                  if (motivo.trim().length < 10) {
-                    setToast({ mensaje: 'El motivo debe tener al menos 10 caracteres', tipo: 'error' })
+                  if (
+                    motivo.trim().length < 10
+                  ) {
+                    setToast({
+                      mensaje:
+                        'El motivo debe tener al menos 10 caracteres',
+                      tipo: 'error'
+                    })
                     return
                   }
 
-                  if (motivo.length > 500) {
-                    setToast({ mensaje: 'El motivo no puede superar los 500 caracteres', tipo: 'warning' })
+                  if (
+                    motivo.length > 500
+                  ) {
+                    setToast({
+                      mensaje:
+                        'El motivo no puede superar los 500 caracteres',
+                      tipo: 'warning'
+                    })
                     return
                   }
 
@@ -581,16 +794,20 @@ function AdminPendientes() {
               </button>
 
             </div>
+
           </div>
+
         </div>
       )}
 
-
+      {/* TOAST */}
       {toast && (
         <Toast
           mensaje={toast.mensaje}
           tipo={toast.tipo}
-          onClose={() => setToast(null)}
+          onClose={() =>
+            setToast(null)
+          }
         />
       )}
 

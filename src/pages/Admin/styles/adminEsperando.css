@@ -9,9 +9,9 @@
 }
 
 .admin-esperando-header h2 {
-  margin: 0 0 8px;
-  font-size: 24px;
-  color: #061f3a;
+  margin: 0;
+  color: #251545;
+  font-size: 22px;
 }
 
 /* FILTROS */
@@ -19,14 +19,15 @@
 .admin-esperando-toggle {
   width: 100%;
 
-  background: #ffffff;
-  border: 1px solid #d8e1ec;
-  border-radius: 14px;
+  background: white;
+  border: 1px solid #dde4ed;
+  border-radius: 10px;
 
-  padding: 14px 20px;
+  padding: 12px 16px;
 
-  color: #061f3a;
-  font-weight: 600;
+  color: #4a6080;
+  font-size: 13px;
+  font-weight: 500;
 
   display: flex;
   align-items: center;
@@ -34,91 +35,114 @@
 
   text-align: left;
   cursor: pointer;
+  transition: 0.15s;
+}
+
+.admin-esperando-toggle:hover {
+  border-color: #3d2b6b;
+  color: #3d2b6b;
 }
 
 .admin-esperando-filters {
-  background: #ffffff;
-  border: 1px solid #d8e1ec;
-  border-radius: 16px;
+  background: white;
+  border: 1px solid #dde4ed;
+  border-radius: 10px;
 
-  padding: 22px 24px;
+  padding: 20px;
 
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 26px;
+  gap: 20px;
 }
 
 .admin-esperando-group {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .admin-esperando-group label {
-  margin-bottom: 8px;
-
   font-size: 12px;
-  font-weight: 700;
-  color: #38527a;
-  text-transform: uppercase;
+  font-weight: 600;
+  color: #3d2b6b;
 }
 
 .admin-esperando-group input,
 .admin-esperando-group select {
-  height: 44px;
+  padding: 9px 12px;
 
-  border: 1px solid #d8e1ec;
-  border-radius: 10px;
+  border: 1.5px solid #dde4ed;
+  border-radius: 8px;
 
-  padding: 0 14px;
+  font-size: 13px;
+  color: #1a2a3a;
 
-  font-size: 15px;
-  color: #061f3a;
-  background: #ffffff;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.admin-esperando-group input:focus,
+.admin-esperando-group select:focus {
+  border-color: #3d2b6b;
 }
 
 .admin-esperando-group small {
-  margin-top: 8px;
-  color: #8a9ab5;
-  font-size: 12px;
+  margin-top: 6px;
+  color: #8a98b8;
+  font-size: 11px;
 }
 
 .admin-date-tabs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .admin-date-tabs button {
   height: 32px;
 
-  border: 1px solid #d8e1ec;
-  border-radius: 10px;
+  border: 1px solid #dde4ed;
+  border-radius: 8px;
 
-  background: #eef3f8;
-  color: #0b3a70;
+  background: #f8fafc;
+  color: #4a6080;
 
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
+  transition: 0.15s;
+}
+
+.admin-date-tabs button:hover {
+  border-color: #3d2b6b;
+  color: #3d2b6b;
 }
 
 .admin-date-tabs button.active {
-  border-color: #1f6fb2;
-  background: #e7f1ff;
+  background: rgba(37, 21, 69, 0.08);
+  border-color: rgba(37, 21, 69, 0.2);
+  color: #251545;
 }
 
 .admin-esperando-filter-btn {
-  height: 38px;
+  background: #251545;
+  color: white;
 
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
 
-  background: #08233a;
-  color: #ffffff;
+  padding: 9px 18px;
 
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 500;
+
   cursor: pointer;
+  transition: 0.15s;
+}
+
+.admin-esperando-filter-btn:hover {
+  background: #3d2b6b;
 }
 
 /* TABLA */
@@ -126,9 +150,9 @@
 .admin-esperando-table {
   width: 100%;
 
-  background: #ffffff;
-  border: 1px solid #d8e1ec;
-  border-radius: 16px;
+  background: white;
+  border: 1px solid #dde4ed;
+  border-radius: 12px;
 
   overflow: hidden;
 }
@@ -136,41 +160,52 @@
 .admin-esperando-table table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 13px;
 }
 
 .admin-esperando-table thead {
-  background: #eef3f8;
+  background: #251545;
+  color: white;
 }
 
 .admin-esperando-table th {
-  padding: 14px 20px;
+  padding: 12px 16px;
 
   text-align: left;
 
-  font-size: 13px;
-  font-weight: 700;
-  color: #38527a;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+
+  color: white;
 }
 
 .admin-esperando-table td {
-  padding: 16px 20px;
+  padding: 12px 16px;
 
-  border-top: 1px solid #e4ebf3;
+  border-bottom: 1px solid #f0f4f8;
 
-  font-size: 14px;
-  color: #061f3a;
+  font-size: 13px;
+  color: #1a2a3a;
+}
+
+.admin-esperando-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-esperando-table tbody tr:hover {
+  background: #fafbfc;
 }
 
 .admin-esperando-id {
-  color: #8a98b3 !important;
-  font-weight: 700;
+  color: #888 !important;
+  font-size: 12px;
 }
 
 .admin-esperando-empty {
   text-align: center;
-  padding: 42px !important;
-  color: #8a98b3 !important;
+  padding: 40px !important;
+  color: #8a98b8 !important;
 }
 
 /* BADGE */
@@ -180,15 +215,15 @@
   align-items: center;
   justify-content: center;
 
-  padding: 7px 14px;
+  padding: 5px 12px;
 
   border-radius: 999px;
 
-  background: #e7f1ff;
-  color: #0b4e91;
+  background: rgba(201, 168, 76, 0.15);
+  color: #8a6a1a;
 
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* BOTONES */
@@ -201,49 +236,71 @@
 }
 
 .admin-esperando-actions button {
-  border: none;
-  border-radius: 9px;
+  border-radius: 6px;
 
-  padding: 8px 16px;
+  padding: 6px 12px;
 
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
 
   cursor: pointer;
-  line-height: 1;
+  transition: 0.15s;
 }
 
 .btn-contactar {
-  background: #e7f1ff;
-  color: #07599f;
-  border: 1px solid #bdd7f3 !important;
+  background: rgba(26, 90, 154, 0.08);
+  color: #1a5a9a;
+  border: 1px solid rgba(26, 90, 154, 0.2);
+}
+
+.btn-contactar:hover {
+  background: rgba(26, 90, 154, 0.15);
 }
 
 .btn-revisar {
-  background: #ffffff;
-  color: #38527a;
-  border: 1px solid #d8e1ec !important;
+  background: rgba(37, 21, 69, 0.08);
+  color: #251545;
+  border: 1px solid rgba(37, 21, 69, 0.2);
+}
+
+.btn-revisar:hover {
+  background: rgba(37, 21, 69, 0.15);
 }
 
 .btn-asignar {
-  background: #c9b157;
-  color: #061f3a;
+  background: #c9a84c;
+  color: white;
+  border: none;
+}
+
+.btn-asignar:hover {
+  background: #b8943a;
 }
 
 .btn-rechazar {
-  background: #c7352e;
-  color: #ffffff;
+  background: rgba(192, 57, 43, 0.08);
+  color: #c0392b;
+  border: 1px solid rgba(192, 57, 43, 0.2);
+}
+
+.btn-rechazar:hover {
+  background: rgba(192, 57, 43, 0.15);
 }
 
 .btn-ver {
-  background: #ffffff;
-  color: #27486d;
-  border: 1px solid #d8e1ec !important;
+  background: rgba(37, 21, 69, 0.08);
+  color: #251545;
+  border: 1px solid rgba(37, 21, 69, 0.2);
+}
+
+.btn-ver:hover {
+  background: rgba(37, 21, 69, 0.15);
 }
 
 /* OVERLAY */
 
-.admin-modal-overlay {
+.admin-modal-overlay,
+.solicitud-modal-overlay {
   position: fixed;
   inset: 0;
 
@@ -260,12 +317,13 @@
 
 /* MODAL VER */
 
-.modal-ver {
+.modal-ver,
+.solicitud-modal {
   width: 980px;
   max-width: 95vw;
 
-  background: #ffffff;
-  border-radius: 16px;
+  background: white;
+  border-radius: 14px;
 
   overflow: hidden;
 
@@ -274,142 +332,155 @@
   animation: modalFade 0.2s ease;
 }
 
-.modal-ver-header {
-  padding: 32px 40px 26px;
+.modal-ver-header,
+.solicitud-modal-header {
+  padding: 28px 34px 24px;
 
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
 
-  border-bottom: 1px solid #e1e8f0;
+  border-bottom: 1px solid #f0f4f8;
 }
 
 .modal-title-row {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .modal-title-row h2 {
   margin: 0;
 
-  color: #071f3d;
-  font-size: 30px;
-  font-weight: 900;
+  color: #251545;
+  font-size: 24px;
+  font-weight: 700;
 
   text-transform: uppercase;
 }
 
 .modal-status {
-  background: #e7f1ff;
-  color: #0b4e91;
+  background: rgba(201, 168, 76, 0.15);
+  color: #8a6a1a;
 
-  padding: 8px 18px;
+  padding: 6px 14px;
 
   border-radius: 999px;
 
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.modal-ver-header p {
+.modal-ver-header p,
+.solicitud-modal-header p {
   margin: 8px 0 0;
 
-  color: #8192b0;
-  font-size: 18px;
+  color: #8a98b8;
+  font-size: 14px;
 }
 
-.modal-ver-close {
+.modal-ver-close,
+.modal-close {
   border: none;
   background: transparent;
 
-  color: #8192b0;
+  color: #8a98b8;
 
-  font-size: 42px;
+  font-size: 34px;
   line-height: 1;
 
   cursor: pointer;
 }
 
-.modal-ver-body {
+.modal-ver-body,
+.solicitud-modal-body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 
-  padding: 40px;
+  gap: 24px;
+
+  padding: 24px;
 }
 
-.modal-ver-column {
+.modal-ver-column,
+.modal-column {
   display: flex;
   flex-direction: column;
   gap: 8px;
 
-  padding-right: 32px;
-  margin-right: 32px;
+  padding-right: 24px;
 
-  border-right: 1px solid #dbe3ef;
+  border-right: 1px solid #f0f4f8;
 }
 
+.modal-ver-column:last-child,
+.modal-column:last-child,
 .modal-ver-column.no-border {
   border-right: none;
-  margin-right: 0;
   padding-right: 0;
 }
 
-.modal-ver-column h4 {
-  margin: 0 0 22px;
+.modal-ver-column h4,
+.modal-column h4 {
+  margin: 0 0 12px;
 
-  color: #b8962e;
+  color: #c9a84c;
 
-  font-size: 15px;
-  font-weight: 900;
+  font-size: 11px;
+  font-weight: 700;
 
-  letter-spacing: 0.3px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
-.modal-ver-column span {
-  margin-top: 10px;
+.modal-ver-column span,
+.modal-column span {
+  color: #8a98b8;
+  font-size: 12px;
+}
 
-  color: #8797b5;
+.modal-ver-column strong,
+.modal-column strong {
+  color: #1a2a3a;
   font-size: 14px;
-}
-
-.modal-ver-column strong {
-  color: #071f3d;
-
-  font-size: 17px;
-  line-height: 1.2;
+  line-height: 1.4;
 }
 
 .modal-email {
-  color: #0069b4 !important;
+  color: #1a5a9a !important;
 }
 
 .modal-warning {
-  color: #a26000 !important;
+  color: #a26500 !important;
 }
 
-.modal-ver-footer {
-  background: #eef4fb;
+.modal-ver-footer,
+.solicitud-modal-footer {
+  background: #f8fafc;
 
-  padding: 24px 40px;
+  padding: 20px 24px;
+
+  border-top: 1px solid #f0f4f8;
 
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.modal-ver-footer div {
+.modal-ver-footer div,
+.solicitud-modal-footer div {
   display: flex;
-  gap: 12px;
+  gap: 8px;
 }
 
 /* MODAL RECHAZAR */
 
-.modal-rechazo {
+.modal-rechazo,
+.reject-modal {
   width: 430px;
   max-width: 92vw;
 
-  background: #ffffff;
+  background: white;
   border-radius: 14px;
 
   padding: 28px;
@@ -419,23 +490,26 @@
   animation: modalFade 0.2s ease;
 }
 
-.modal-rechazo h3 {
+.modal-rechazo h3,
+.reject-modal h3 {
   margin: 0 0 14px;
 
   color: #c7362f;
 
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 700;
 }
 
-.modal-rechazo p {
+.modal-rechazo p,
+.reject-modal p {
   margin: 0 0 18px;
 
   color: #38527a;
   font-size: 14px;
 }
 
-.modal-rechazo label {
+.modal-rechazo label,
+.reject-modal label {
   display: block;
 
   margin-bottom: 10px;
@@ -444,26 +518,25 @@
 
   font-size: 13px;
   font-weight: 700;
-
-  text-transform: uppercase;
 }
 
-.modal-rechazo label span {
+.modal-rechazo label span,
+.reject-modal label span {
   color: #c7362f;
 }
 
-.modal-rechazo textarea {
+.modal-rechazo textarea,
+.reject-modal textarea {
   width: 100%;
   min-height: 95px;
 
-  border: 1px solid #d8e1ec;
+  border: 1px solid #dde4ed;
   border-radius: 10px;
 
   padding: 14px;
 
   font-size: 14px;
-  font-family: inherit;
-  color: #061f3a;
+  color: #1a2a3a;
 
   resize: vertical;
   box-sizing: border-box;
@@ -471,11 +544,13 @@
   outline: none;
 }
 
-.modal-rechazo textarea:focus {
-  border-color: #b89b32;
+.modal-rechazo textarea:focus,
+.reject-modal textarea:focus {
+  border-color: #3d2b6b;
 }
 
-.modal-rechazo-actions {
+.modal-rechazo-actions,
+.reject-modal-actions {
   margin-top: 22px;
 
   display: flex;
@@ -486,37 +561,62 @@
 /* BOTONES MODAL */
 
 .btn-cancelar {
-  background: #ffffff !important;
-  color: #0b2a50 !important;
+  background: white !important;
+  color: #251545 !important;
 
-  border: 1px solid #d8e1ec !important;
-  border-radius: 9px;
+  border: 1px solid #dde4ed !important;
+  border-radius: 8px;
 
   padding: 10px 18px;
 
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 
   cursor: pointer;
 }
 
 .btn-confirmar-rechazo {
-  background: #cf2f29 !important;
-  color: #ffffff !important;
+  background: rgba(192, 57, 43, 0.08) !important;
+  color: #c0392b !important;
 
-  border: none !important;
-  border-radius: 9px;
+  border: 1px solid rgba(192, 57, 43, 0.2) !important;
+  border-radius: 8px;
 
   padding: 10px 18px;
 
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 13px;
+  font-weight: 600;
 
   cursor: pointer;
 }
 
 .btn-confirmar-rechazo:hover {
-  background: #b82621 !important;
+  background: rgba(192, 57, 43, 0.15) !important;
+}
+
+/* COMENTARIO */
+
+.modal-comentario {
+  padding: 0 24px 16px;
+  border-top: 1px solid #f0f4f8;
+}
+
+.modal-comentario h4 {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c9a84c;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 16px 0 8px;
+}
+
+.modal-comentario p {
+  font-size: 13px;
+  color: #4a6080;
+  line-height: 1.6;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 10px 14px;
 }
 
 /* ANIMACIÓN */
@@ -540,31 +640,34 @@
     grid-template-columns: 1fr;
   }
 
-  .modal-ver-body {
+  .modal-ver-body,
+  .solicitud-modal-body {
     grid-template-columns: 1fr;
-    gap: 30px;
   }
 
-  .modal-ver-column {
+  .modal-ver-column,
+  .modal-column {
     border-right: none;
-    border-bottom: 1px solid #dbe3ef;
+    border-bottom: 1px solid #f0f4f8;
 
     padding-right: 0;
-    padding-bottom: 24px;
-    margin-right: 0;
+    padding-bottom: 20px;
   }
 
-  .modal-ver-column.no-border {
+  .modal-ver-column:last-child,
+  .modal-column:last-child {
     border-bottom: none;
   }
 
-  .modal-ver-footer {
+  .modal-ver-footer,
+  .solicitud-modal-footer {
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     align-items: stretch;
   }
 
-  .modal-ver-footer div {
+  .modal-ver-footer div,
+  .solicitud-modal-footer div {
     flex-wrap: wrap;
   }
 
@@ -573,88 +676,62 @@
   }
 }
 
-
 /* PAGINACIÓN */
 
-    .paginacion {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 16px 0;
-    }
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+}
 
-    .pag-btn {
-      background: white;
-      border: 1.5px solid #dde4ed;
-      border-radius: 8px;
-      padding: 7px 14px;
-      font-size: 13px;
-      color: #4a6080;
-      cursor: pointer;
-      transition: 0.15s;
-    }
+.pag-btn {
+  background: white;
+  border: 1.5px solid #dde4ed;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: #4a6080;
+  cursor: pointer;
+  transition: 0.15s;
+}
 
-    .pag-btn:hover:not(:disabled) {
-      border-color: #3d2b6b;
-      color: #3d2b6b;
-    }
+.pag-btn:hover:not(:disabled) {
+  border-color: #3d2b6b;
+  color: #3d2b6b;
+}
 
-    .pag-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
+.pag-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
-    .pag-numeros {
-      display: flex;
-      gap: 4px;
-    }
+.pag-numeros {
+  display: flex;
+  gap: 4px;
+}
 
-    .pag-num {
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      border: 1.5px solid #dde4ed;
-      background: white;
-      font-size: 13px;
-      color: #4a6080;
-      cursor: pointer;
-      transition: 0.15s;
-    }
+.pag-num {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1.5px solid #dde4ed;
+  background: white;
+  font-size: 13px;
+  color: #4a6080;
+  cursor: pointer;
+  transition: 0.15s;
+}
 
-    .pag-num:hover {
-      border-color: #3d2b6b;
-      color: #3d2b6b;
-    }
+.pag-num:hover {
+  border-color: #3d2b6b;
+  color: #3d2b6b;
+}
 
-    .pag-num.active {
-      background: #251545;
-      border-color: #251545;
-      color: white;
-      font-weight: 600;
-    }
-
-/* Modal de comentarios especailes por solicitud */
-
-      .modal-comentario {
-        padding: 0 24px 16px;
-        border-top: 1px solid #f0f4f8;
-      }
-
-      .modal-comentario h4 {
-        font-size: 11px;
-        font-weight: 700;
-        color: #c9a84c;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        margin: 16px 0 8px;
-      }
-
-      .modal-comentario p {
-        font-size: 13px;
-        color: #4a6080;
-        line-height: 1.6;
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 10px 14px;
-      }
+.pag-num.active {
+  background: #251545;
+  border-color: #251545;
+  color: white;
+  font-weight: 600;
+}
