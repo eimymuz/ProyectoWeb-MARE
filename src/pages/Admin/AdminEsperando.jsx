@@ -106,7 +106,9 @@ MARE - Marina Puerto de la Navidad
       }
 
       cerrarModalVer()
-      obtenerSolicitudes()
+
+      // Redirige al mapa con la solicitud preseleccionada
+      navigate(`/admin/mapa?solicitud=${id}`)
     } catch (error) {
       console.error(error)
       alert('Error de conexión')
