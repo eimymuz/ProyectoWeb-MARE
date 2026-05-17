@@ -40,11 +40,13 @@ function AdminMapa() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
 
+
   // ID de la solicitud que viene por URL al llegar desde el flujo de aprobación
   const solicitudParam = searchParams.get('solicitud')
 
   // Indica si se viene desde el flujo de reasignación (desde Asignadas)
   const esReasignacion = searchParams.get('reasignar') === '1'
+
 
   // Espacio seleccionado al hacer clic
   const [espacioSeleccionado, setEspacioSeleccionado] = useState(null)
@@ -156,6 +158,7 @@ function AdminMapa() {
       setLoading(false)
     }
   }
+
 
   const cargarSolicitudesAprobadas = async () => {
     try {

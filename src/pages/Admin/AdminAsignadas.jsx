@@ -13,6 +13,9 @@ function AdminAsignadas() {
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
 
+  const [historial, setHistorial] = useState([])
+  const [loadingHistorial, setLoadingHistorial] = useState(false)
+
   // Filtros
   const [busqueda, setBusqueda] = useState('')
   const [muelle, setMuelle] = useState('')
@@ -68,6 +71,68 @@ function AdminAsignadas() {
 
     return coincideBusqueda && coincideMuelle && coincideTipo && coincideFecha
   })
+
+
+
+  // Carga el historial de asignaciones de una solicitud al abrir el modal
+  const cargarHistorial = async (solicitudId) => {
+    try {
+      setLoadingHistorial(true)
+      const res = await fetchAuth(`/mapa/asignaciones/${solicitudId}/historial`)
+      const data = await res.json()
+      if (data.ok) setHistorial(data.historial)
+    } catch (error) {
+      console.error('Error al cargar historial:', error)
+    } finally {
+      setLoadingHistorial(false)
+    }
+  }
+
+
+  // Formatea fecha con hora sin minutos — ej: 16/05/2026 10h
+  const formatearFechaHora = (fecha) => {
+    if (!fecha) return '—'
+    const d = new Date(fecha)
+    return d.toLocaleDateString('es-MX', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }) + ' ' + d.getHours() + 'h'
+  }
+
+  // Botones!!
+        // Abre Gmail para contactar al cliente sobre su asignación
+        const contactarCliente = (a) => {
+          if (!a.email) {
+            alert('Esta solicitud no tiene correo registrado.')
+            return
+          }
+
+          const asunto = `Asignación — ${a.nombre_bote}`
+          const cuerpo = `
+        Estimado/a ${a.fullname}:
+
+        Le contactamos respecto a su embarcación ${a.nombre_bote}, 
+        actualmente asignada en el Muelle ${a.muelle_nombre}, Espacio ${a.espacio_numero}.
+
+        Quedamos atentos a cualquier consulta.
+
+        Saludos cordiales.
+        MARE - Marina Puerto de la Navidad
+          `
+
+          const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(a.email)}&su=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+          window.open(gmailUrl, '_blank')
+        }
+
+        // Busca el email del cliente en Gmail para revisar conversaciones previas
+        const revisarCliente = (a) => {
+          if (!a.email) {
+            alert('Esta solicitud no tiene correo registrado.')
+            return
+          }
+          window.open(`https://mail.google.com/mail/u/0/#search/${encodeURIComponent(a.email)}`, '_blank')
+        }
 
   return (
     <div className="admin-asignadas-page">
@@ -206,7 +271,10 @@ function AdminAsignadas() {
                       <button
                         type="button"
                         className="btn-view"
-                        onClick={() => setVerModal(a)}
+                        onClick={() => {
+                        setVerModal(a)
+                        cargarHistorial(a.solicitud_id)
+                      }}
                       >
                         Ver
                       </button>
@@ -229,6 +297,7 @@ function AdminAsignadas() {
             className="solicitud-modal"
             onClick={(e) => e.stopPropagation()}
           >
+            {/* HEADER */}
             <div className="solicitud-modal-header">
               <div>
                 <div className="modal-title-row">
@@ -237,16 +306,14 @@ function AdminAsignadas() {
                 </div>
                 <p>{verModal.fullname} · Solicitud #{verModal.solicitud_id}</p>
               </div>
-
               <button
                 type="button"
                 className="modal-close"
                 onClick={() => setVerModal(null)}
-              >
-                ×
-              </button>
+              >×</button>
             </div>
 
+            {/* BODY — 3 columnas */}
             <div className="solicitud-modal-body">
               <div className="modal-column">
                 <h4>Embarcación</h4>
@@ -282,17 +349,17 @@ function AdminAsignadas() {
                   <span>Teléfono</span>
                   <strong>{verModal.telefono}</strong>
                 </div>
+                <div className="modal-item">
+                  <span>1ª entrada MX</span>
+                  <strong>{verModal.primera_entrada_mexico ? 'Sí' : 'No'}</strong>
+                </div>
               </div>
 
               <div className="modal-column">
-                <h4>Asignación</h4>
+                <h4>Estancia</h4>
                 <div className="modal-item">
-                  <span>Muelle</span>
-                  <strong>{verModal.muelle_nombre}</strong>
-                </div>
-                <div className="modal-item">
-                  <span>Espacio</span>
-                  <strong>{verModal.espacio_numero}</strong>
+                  <span>Solicitud</span>
+                  <strong>{formatearFecha(verModal.fecha_solicitud)}</strong>
                 </div>
                 <div className="modal-item">
                   <span>Llegada</span>
@@ -305,17 +372,98 @@ function AdminAsignadas() {
               </div>
             </div>
 
+            {/* COMENTARIO DEL CLIENTE */}
+            {verModal.comentario && (
+              <div className="modal-comentario">
+                <h4>Comentario del cliente</h4>
+                <p>{verModal.comentario}</p>
+              </div>
+            )}
+
+            {/* HISTORIAL DE UBICACIONES */}
+            <div className="modal-historial">
+              <h4>Historial de ubicaciones</h4>
+
+              {loadingHistorial ? (
+                <p className="historial-loading">Cargando historial...</p>
+              ) : historial.length === 0 ? (
+                <p className="historial-loading">Sin historial.</p>
+              ) : (
+                <div className="historial-scroll">
+                  <table className="historial-table">
+                    <thead>
+                      <tr>
+                        <th>Muelle</th>
+                        <th>Espacio</th>
+                        <th>Asignado el</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Admin</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historial.map((h) => (
+                        <tr key={h.asignacion_id}>
+                          <td>
+                            {h.muelle_nombre}
+                            {h.activa ? (
+                              <span className="badge-actual">actual</span>
+                            ) : null}
+                          </td>
+                          <td>{h.espacio_numero}</td>
+                          <td>{formatearFechaHora(h.fecha_asignacion)}</td>
+                          <td>{formatearFecha(h.fecha_inicio)}</td>
+                          <td>{formatearFecha(h.fecha_fin)}</td>
+                          <td className="historial-admin">{h.admin_nombre}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+
+            {/* FOOTER */}
             <div className="solicitud-modal-footer">
-              <button
-                type="button"
-                className="btn-reasignar"
-                onClick={() => {
-                  setVerModal(null)
-                  reasignar(verModal.solicitud_id)
-                }}
-              >
-                Reasignar
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  type="button"
+                  className="btn-contactar"
+                  onClick={() => contactarCliente(verModal)}
+                >
+                  Contactar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-revisar"
+                  onClick={() => revisarCliente(verModal)}
+                >
+                  Revisar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-reasignar"
+                  onClick={() => {
+                    setVerModal(null)
+                    reasignar(verModal.solicitud_id)
+                  }}
+                >
+                  Reasignar
+                </button>
+
+                <button
+                  type="button"
+                  className="btn-editar"
+                  onClick={() => {
+                    setVerModal(null)
+                    navigate(`/admin/editar/${verModal.solicitud_id}?from=asignadas`)
+                  }}
+                >
+                  Editar
+                </button>
+              </div>
 
               <button
                 type="button"
@@ -325,6 +473,7 @@ function AdminAsignadas() {
                 Cerrar
               </button>
             </div>
+
           </div>
         </div>
       )}

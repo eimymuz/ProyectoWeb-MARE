@@ -248,6 +248,9 @@ router.get('/asignaciones', authMiddleware, async (req, res) => {
         s.id AS solicitud_id,
         s.fecha_llegada,
         s.fecha_salida,
+        s.fecha_solicitud,
+        s.comentario,
+        s.primera_entrada_mexico,
         s.estado,
         emb.nombre_bote,
         emb.eslora,
@@ -284,6 +287,44 @@ router.get('/asignaciones', authMiddleware, async (req, res) => {
   }
 })
 
+
+/* ======================================
+   HISTORIAL DE ASIGNACIONES POR SOLICITUD
+   GET /api/mapa/asignaciones/:solicitudId/historial
+====================================== */
+router.get('/asignaciones/:solicitudId/historial', authMiddleware, async (req, res) => {
+  try {
+    const { solicitudId } = req.params
+
+    const [historial] = await pool.query(
+      `SELECT
+        a.id AS asignacion_id,
+        a.fecha_inicio,
+        a.fecha_fin,
+        a.fecha_asignacion,
+        a.activa,
+        m.nombre AS muelle_nombre,
+        e.numero AS espacio_numero,
+        adm.fullname AS admin_nombre
+      FROM asignacion a
+      INNER JOIN muelle m ON m.id = a.muelle_id
+      INNER JOIN asignacion_espacios ae ON ae.asignacion_id = a.id
+      INNER JOIN espacio e ON e.id = ae.espacio_id
+      INNER JOIN administrador adm ON adm.id = a.administrador_id
+      WHERE a.solicitud_id = ?
+      ORDER BY a.id DESC`,
+      [solicitudId]
+    )
+
+    res.json({ ok: true, historial })
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: 'Error al obtener historial',
+      detalle: error.message
+    })
+  }
+})
 
 
 
