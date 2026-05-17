@@ -12,7 +12,7 @@ const router = Router()
 
 router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { username, password } = req.body || {}
 
     if (!username || !password) {
       return res.status(400).json({
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
 
     const admin = admins[0]
 
-    if (!admin.activo) {
+    if (admin.activo !== 1) {
       return res.status(401).json({
         ok: false,
         error: 'Usuario inactivo'
@@ -61,7 +61,7 @@ router.post('/login', async (req, res) => {
         fullname: admin.fullname,
         rol: admin.rol
       },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'mare_secret',
       { expiresIn: '8h' }
     )
 
@@ -77,6 +77,8 @@ router.post('/login', async (req, res) => {
       }
     })
   } catch (error) {
+    console.error('ERROR LOGIN:', error)
+
     res.status(500).json({
       ok: false,
       error: 'Error al iniciar sesión',
