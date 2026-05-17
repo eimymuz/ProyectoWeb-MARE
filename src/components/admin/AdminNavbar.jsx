@@ -1,7 +1,5 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate, Link } from 'react-router-dom'
 import { obtenerAdmin, eliminarToken } from '../../services/api'
-import { Users } from 'lucide-react'
-import { Link } from 'react-router-dom'
 
 import {
   Clock3,
@@ -9,6 +7,8 @@ import {
   Check,
   ClipboardList,
   LogOut,
+  BarChart3,
+  Users
 } from 'lucide-react'
 
 // Barra de navegación del panel administrativo.
@@ -66,6 +66,11 @@ function AdminNavbar() {
           <NavLink to="/admin/mapa" className="admin-link">
             <Map size={16} />
             Mapa
+          </NavLink>
+
+          <NavLink to="/admin/reportes" className="admin-link">
+            <BarChart3 size={16} />
+            <span>Reportes</span>
           </NavLink>
 
 

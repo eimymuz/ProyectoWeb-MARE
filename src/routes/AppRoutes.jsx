@@ -15,6 +15,7 @@ import AdminEditarSolicitud from '../pages/admin/AdminEditarSolicitud'
 import AdminEsperando from '../pages/admin/AdminEsperando'
 import AdminAsignadas from '../pages/admin/AdminAsignadas'
 import AdminMapa from '../pages/admin/AdminMapa'
+import AdminReportes from '../pages/admin/AdminReportes'
 
 function AppRoutes() {
   return (
@@ -77,6 +78,12 @@ function AppRoutes() {
           <Route
             path="mapa"
             element={<AdminMapa />}
+          />
+
+          {/* REPORTES */}
+          <Route
+            path="reportes"
+            element={<AdminReportes />}
           />
 
           {/* USUARIOS */}
