@@ -16,6 +16,7 @@ import AdminEsperando from '../pages/admin/AdminEsperando'
 import AdminAsignadas from '../pages/admin/AdminAsignadas'
 import AdminMapa from '../pages/admin/AdminMapa'
 import AdminReportes from '../pages/admin/AdminReportes'
+import AdminEstadisticas from '../pages/admin/AdminEstadisticas'
 
 function AppRoutes() {
   return (
@@ -84,6 +85,12 @@ function AppRoutes() {
           <Route
             path="reportes"
             element={<AdminReportes />}
+          />
+
+          {/* ESTADÍSTICAS */}
+          <Route
+            path="estadisticas"
+            element={<AdminEstadisticas />}
           />
 
           {/* USUARIOS */}

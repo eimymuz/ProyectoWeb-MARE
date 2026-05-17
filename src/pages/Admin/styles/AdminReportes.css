@@ -2,140 +2,219 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  color: #08233f;
 }
 
-/* ======================================
-   HEADER
-====================================== */
+/* HEADER */
 
-.admin-reportes-header {
-  background: white;
-  border-radius: 20px;
-  padding: 28px;
-  border: 1px solid #e2e8f0;
-}
-
-.admin-reportes-header h1 {
-  margin: 0;
-  font-size: 34px;
-  color: #0b2038;
-}
-
-.admin-reportes-header p {
-  margin-top: 10px;
-  color: #5b708b;
-  font-size: 15px;
-}
-
-/* ======================================
-   GRID KPIs
-====================================== */
-
-.admin-reportes-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.report-card {
-  background: white;
-  border-radius: 18px;
-  padding: 24px;
-  border: 1px solid #e2e8f0;
-
+.admin-reportes-top {
   display: flex;
-  flex-direction: column;
-  gap: 14px;
-
-  transition: 0.2s ease;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.report-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-}
-
-.report-card h3 {
+.admin-reportes-top h1 {
   margin: 0;
-  font-size: 15px;
-  color: #516173;
-  font-weight: 600;
-}
-
-.report-card span {
-  font-size: 34px;
-  font-weight: 800;
-  color: #1e293b;
-}
-
-/* ======================================
-   SECTION
-====================================== */
-
-.admin-reportes-section {
-  background: white;
-  border-radius: 20px;
-  padding: 28px;
-  border: 1px solid #e2e8f0;
-}
-
-.admin-reportes-section h2 {
-  margin: 0 0 22px;
-  color: #0b2038;
   font-size: 24px;
+  color: #08233f;
 }
 
-/* ======================================
-   BOTONES
-====================================== */
-
-.report-actions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.report-btn {
+.btn-estadisticas {
   border: none;
-  background: #2d1457;
+  background: #08233f;
   color: white;
-  padding: 14px 22px;
+  padding: 12px 24px;
   border-radius: 12px;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s ease;
+  font-weight: 700;
 }
 
-.report-btn:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
+/* FILTROS */
+
+.reportes-filtros-card {
+  background: white;
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  padding: 28px;
+  display: flex;
+  align-items: end;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
 }
 
-.report-btn.secondary {
-  background: #e9eef5;
-  color: #1e293b;
+.filtro-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* ======================================
-   RESPONSIVE
-====================================== */
-
-@media (max-width: 1100px) {
-  .admin-reportes-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.filtro-grupo label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #405777;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-@media (max-width: 700px) {
-  .admin-reportes-grid {
-    grid-template-columns: 1fr;
-  }
+.filtro-grupo select {
+  width: 260px;
+  height: 48px;
+  border: 1px solid #d6e1ec;
+  border-radius: 10px;
+  padding: 0 16px;
+  color: #08233f;
+  background: white;
+  font-size: 15px;
+  outline: none;
+}
 
-  .report-actions {
+.filtro-grupo select:focus {
+  border-color: #08233f;
+}
+
+/* BOTONES */
+
+.btn-filtrar,
+.btn-limpiar,
+.btn-pdf {
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  padding: 0 20px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.btn-filtrar {
+  background: #08233f;
+  color: white;
+}
+
+.btn-limpiar {
+  background: #edf2f7;
+  color: #405777;
+  border: 1px solid #d6e1ec;
+}
+
+.btn-pdf {
+  background: #c7aa49;
+  color: #08233f;
+}
+
+/* TABLA */
+
+.reportes-tabla-card {
+  background: white;
+  border: 1px solid #dbe5ef;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  overflow-x: auto;
+}
+
+.reportes-tabla {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #dbe5ef;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.reportes-tabla thead th {
+  background: #eef3f8;
+  color: #405777;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  text-transform: uppercase;
+  padding: 16px 18px;
+  border-bottom: 1px solid #dbe5ef;
+}
+
+.reportes-tabla tbody td {
+  padding: 16px 18px;
+  font-size: 14px;
+  color: #08233f;
+  border-bottom: 1px solid #dbe5ef;
+}
+
+.reportes-tabla tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.reportes-tabla tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* BADGES */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge.aprobada {
+  background: #dff4e8;
+  color: #087443;
+}
+
+.badge.rechazada {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+/* ACCIONES */
+
+.btn-detalle {
+  border: 1px solid #b8d6f2;
+  background: #eaf4ff;
+  color: #075ca8;
+  border-radius: 9px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn-detalle:hover {
+  background: #dbeeff;
+}
+
+.sin-datos {
+  text-align: center;
+  color: #64748b;
+  padding: 28px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+  .admin-reportes-top {
     flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
   }
 
-  .report-btn {
+  .filtro-grupo select {
+    width: 100%;
+  }
+
+  .reportes-filtros-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .btn-filtrar,
+  .btn-limpiar,
+  .btn-pdf,
+  .btn-estadisticas {
     width: 100%;
   }
 }
