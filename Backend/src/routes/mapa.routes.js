@@ -227,6 +227,55 @@ router.patch('/asignacion/:id/desactivar', authMiddleware, async (req, res) => {
 })
 
 
+/* ======================================
+   OBTENER ASIGNACIONES ACTIVAS
+   GET /api/mapa/asignaciones
+   Lista solicitudes aprobadas con su espacio asignado
+====================================== */
+router.get('/asignaciones', authMiddleware, async (req, res) => {
+  try {
+    const [asignaciones] = await pool.query(
+      `SELECT
+        s.id AS solicitud_id,
+        s.fecha_llegada,
+        s.fecha_salida,
+        s.estado,
+        emb.nombre_bote,
+        emb.eslora,
+        emb.manga,
+        emb.calado,
+        tb.tipo_barco,
+        c.fullname,
+        c.email,
+        c.telefono,
+        a.id AS asignacion_id,
+        a.fecha_inicio,
+        a.fecha_fin,
+        m.nombre AS muelle_nombre,
+        e.numero AS espacio_numero
+      FROM asignacion a
+      INNER JOIN solicitud s ON s.id = a.solicitud_id
+      INNER JOIN embarcacion emb ON emb.id = s.embarcacion_id
+      INNER JOIN tipo_barco tb ON tb.id = emb.tipo_barco_id
+      INNER JOIN clientes c ON c.id = emb.cliente_id
+      INNER JOIN muelle m ON m.id = a.muelle_id
+      INNER JOIN asignacion_espacios ae ON ae.asignacion_id = a.id
+      INNER JOIN espacio e ON e.id = ae.espacio_id
+      WHERE a.activa = 1
+      ORDER BY s.fecha_salida ASC`
+    )
+
+    res.json({ ok: true, asignaciones })
+  } catch (error) {
+    res.status(500).json({
+      ok: false,
+      error: 'Error al obtener asignaciones',
+      detalle: error.message
+    })
+  }
+})
+
+
 
 
 export default router
