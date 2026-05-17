@@ -572,3 +572,64 @@
     flex-wrap: wrap;
   }
 }
+
+
+/* PAGINACIÓN */
+
+    .paginacion {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 0;
+    }
+
+    .pag-btn {
+      background: white;
+      border: 1.5px solid #dde4ed;
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: #4a6080;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .pag-btn:hover:not(:disabled) {
+      border-color: #3d2b6b;
+      color: #3d2b6b;
+    }
+
+    .pag-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .pag-numeros {
+      display: flex;
+      gap: 4px;
+    }
+
+    .pag-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1.5px solid #dde4ed;
+      background: white;
+      font-size: 13px;
+      color: #4a6080;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .pag-num:hover {
+      border-color: #3d2b6b;
+      color: #3d2b6b;
+    }
+
+    .pag-num.active {
+      background: #251545;
+      border-color: #251545;
+      color: white;
+      font-weight: 600;
+    }

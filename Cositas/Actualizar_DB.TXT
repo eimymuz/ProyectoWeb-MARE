@@ -1,0 +1,16 @@
+-- =========================================
+-- ACTUALIZACIONES A LA BASE DE DATOS MARE
+-- Ejecutar en orden — solo si no tienes estos campos ya
+-- =========================================
+
+-- 1. Agregar columna 'rol' a la tabla administrador
+--    Distingue entre gerente y empleado para permisos del sistema
+ALTER TABLE administrador
+ADD COLUMN rol ENUM('gerente', 'empleado', 'inactivo') NOT NULL DEFAULT 'empleado'
+AFTER password;
+
+-- 2. Agregar columna 'fecha_asignacion' a la tabla asignacion
+--    Registra cuándo se hizo cada asignación o reasignación
+ALTER TABLE asignacion
+ADD COLUMN fecha_asignacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+AFTER activa;

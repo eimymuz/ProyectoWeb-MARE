@@ -23,6 +23,8 @@ function AdminPendientes() {
     obtenerSolicitudes()
   }, [])
 
+
+
   const obtenerSolicitudes = async () => {
     try {
       setLoading(true)
@@ -111,6 +113,25 @@ function AdminPendientes() {
       coincideFecha
     )
   })
+
+
+    // Paginación — 10 solicitudes por página
+  const [paginaActual, setPaginaActual] = useState(1)
+  const ITEMS_POR_PAGINA = 10
+
+  // Calcula el total de páginas y las solicitudes de la página actual
+  const totalPaginas = Math.ceil(solicitudesFiltradas.length / ITEMS_POR_PAGINA)
+
+  const solicitudesPaginadas = solicitudesFiltradas.slice(
+    (paginaActual - 1) * ITEMS_POR_PAGINA,
+    paginaActual * ITEMS_POR_PAGINA
+  )
+
+  // Resetea a página 1 cuando cambian los filtros
+  useEffect(() => {
+    setPaginaActual(1)
+  }, [busqueda, tipoBarco, primeraEntrada, fecha])
+
 
   return (
     <div className="admin-pendientes-page">
@@ -221,7 +242,7 @@ function AdminPendientes() {
                 </td>
               </tr>
             ) : (
-              solicitudesFiltradas.map((solicitud) => (
+              solicitudesPaginadas.map((solicitud) => (
                 <tr key={solicitud.id}>
                   <td className="admin-id">#{solicitud.id}</td>
 
@@ -271,6 +292,41 @@ function AdminPendientes() {
             )}
           </tbody>
         </table>
+          {/* PAGINACIÓN */}
+          {totalPaginas > 1 && (
+            <div className="paginacion">
+              <button
+                type="button"
+                className="pag-btn"
+                onClick={() => setPaginaActual(p => Math.max(p - 1, 1))}
+                disabled={paginaActual === 1}
+              >
+                ‹ Anterior
+              </button>
+
+              <div className="pag-numeros">
+                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
+                  <button
+                    key={num}
+                    type="button"
+                    className={`pag-num ${paginaActual === num ? 'active' : ''}`}
+                    onClick={() => setPaginaActual(num)}
+                  >
+                    {num}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                className="pag-btn"
+                onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))}
+                disabled={paginaActual === totalPaginas}
+              >
+                Siguiente ›
+              </button>
+            </div>
+          )}
       </div>
 
       {solicitudVer && (

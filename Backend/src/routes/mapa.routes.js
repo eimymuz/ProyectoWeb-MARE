@@ -47,7 +47,8 @@ router.get('/', authMiddleware, async (req, res) => {
       LEFT JOIN embarcacion emb ON emb.id = s.embarcacion_id
       LEFT JOIN tipo_barco tb ON tb.id = emb.tipo_barco_id
       LEFT JOIN clientes c ON c.id = emb.cliente_id
-      WHERE e.activo = 1`
+      WHERE e.activo = 1
+      GROUP BY e.id`
     )
 
     // Zonas de tierra

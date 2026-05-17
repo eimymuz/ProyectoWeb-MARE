@@ -86,34 +86,34 @@ MARE - Marina Puerto de la Navidad
     window.open(gmailSearchUrl, '_blank')
   }
 
-  const aprobarSolicitud = async (id) => {
-    try {
-      const res = await fetch(`${API_URL}/solicitudes/${id}/estado`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          estado: 'APROBADA'
-        })
+const aprobarSolicitud = async (id) => {
+  try {
+    const res = await fetch(`${API_URL}/solicitudes/${id}/estado`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        estado: 'APROBADA'
       })
+    })
 
-      const data = await res.json()
+    const data = await res.json()
 
-      if (!data.ok) {
-        alert(data.error || 'No se pudo aprobar')
-        return
-      }
-
-      cerrarModalVer()
-
-      // Redirige al mapa con la solicitud preseleccionada
-      navigate(`/admin/mapa?solicitud=${id}`)
-    } catch (error) {
-      console.error(error)
-      alert('Error de conexión')
+    if (!data.ok) {
+      alert(data.error || 'No se pudo aprobar')
+      return
     }
+
+    cerrarModalVer()
+
+    // Redirige al mapa con la solicitud preseleccionada
+    navigate(`/admin/mapa?solicitud=${id}`)
+  } catch (error) {
+    console.error(error)
+    alert('Error de conexión')
   }
+}
 
   const abrirModalRechazo = (solicitud) => {
     setSolicitudRechazo(solicitud)
@@ -204,6 +204,24 @@ MARE - Marina Puerto de la Navidad
 
     return coincideBusqueda && coincideTipo && coincideFecha
   })
+
+
+  // Paginación — 10 solicitudes por página
+  const [paginaActual, setPaginaActual] = useState(1)
+  const ITEMS_POR_PAGINA = 10
+
+  // Calcula el total de páginas y las solicitudes de la página actual
+  const totalPaginas = Math.ceil(solicitudesFiltradas.length / ITEMS_POR_PAGINA)
+
+  const solicitudesPaginadas = solicitudesFiltradas.slice(
+    (paginaActual - 1) * ITEMS_POR_PAGINA,
+    paginaActual * ITEMS_POR_PAGINA
+  )
+
+  // Resetea a página 1 cuando cambian los filtros
+  useEffect(() => {
+    setPaginaActual(1)
+  }, [busqueda, tipoBarco, fecha])
 
   return (
     <div className="admin-esperando-page">
@@ -318,7 +336,7 @@ MARE - Marina Puerto de la Navidad
                 </td>
               </tr>
             ) : (
-              solicitudesFiltradas.map((solicitud) => (
+              solicitudesPaginadas.map((solicitud) => (
                 <tr key={solicitud.id}>
                   <td className="admin-esperando-id">#{solicitud.id}</td>
                   <td>{solicitud.nombre_bote}</td>
@@ -381,6 +399,43 @@ MARE - Marina Puerto de la Navidad
             )}
           </tbody>
         </table>
+
+        {/* PAGINACIÓN */}
+        {totalPaginas > 1 && (
+          <div className="paginacion">
+            <button
+              type="button"
+              className="pag-btn"
+              onClick={() => setPaginaActual(p => Math.max(p - 1, 1))}
+              disabled={paginaActual === 1}
+            >
+              ‹ Anterior
+            </button>
+
+            <div className="pag-numeros">
+              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(num => (
+                <button
+                  key={num}
+                  type="button"
+                  className={`pag-num ${paginaActual === num ? 'active' : ''}`}
+                  onClick={() => setPaginaActual(num)}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              className="pag-btn"
+              onClick={() => setPaginaActual(p => Math.min(p + 1, totalPaginas))}
+              disabled={paginaActual === totalPaginas}
+            >
+              Siguiente ›
+            </button>
+          </div>
+        )}
+
       </div>
 
       {solicitudRechazo && (
