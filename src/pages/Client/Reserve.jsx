@@ -359,6 +359,7 @@ function Reserve({ onClose }) {
                     onBlur={handleBlur}
                     className={estadoCampo('fecha_llegada')}
                     type="date"
+                    min={form.fecha_llegada || new Date().toISOString().slice(0, 10)}
                   />
                   {errores.fecha_llegada && tocados.fecha_llegada && (
                     <span className="campo-msg-error">{errores.fecha_llegada}</span>
@@ -374,6 +375,7 @@ function Reserve({ onClose }) {
                     onBlur={handleBlur}
                     className={estadoCampo('fecha_salida')}
                     type="date"
+                    min={form.fecha_llegada || new Date().toISOString().slice(0, 10)}
                   />
                   {errores.fecha_salida && tocados.fecha_salida && (
                     <span className="campo-msg-error">{errores.fecha_salida}</span>
