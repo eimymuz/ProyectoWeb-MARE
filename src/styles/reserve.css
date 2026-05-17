@@ -262,6 +262,48 @@
   background: #3d3460;
 }
 
+/* VALIDACIONES EN TIEMPO REAL */
+
+.form-group input.campo-valido,
+.form-group select.campo-valido,
+.form-group textarea.campo-valido {
+  border-color: #1a7a4a;
+  box-shadow: 0 0 0 2px rgba(26, 122, 74, 0.1);
+}
+
+.form-group input.campo-error,
+.form-group select.campo-error,
+.form-group textarea.campo-error {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.1);
+}
+
+.campo-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 3px;
+  min-height: 16px;
+}
+
+.campo-msg-error {
+  font-size: 11px;
+  color: #c0392b;
+}
+
+.contador {
+  font-size: 10px;
+  color: #aaa;
+  margin-left: auto;
+}
+
+.contador-excede {
+  font-size: 10px;
+  color: #c0392b;
+  font-weight: 600;
+  margin-left: auto;
+}
+
 @media (max-width: 500px) {
   .popup-overlay {
     padding: .5rem;
