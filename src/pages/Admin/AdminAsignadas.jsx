@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { fetchAuth } from '../../services/api'
 import './AdminAsignadas.css'
+import Toast from '../../components/admin/Toast'
 
 // Página de embarcaciones con espacio asignado en la marina.
 // Muestra solicitudes APROBADAS con asignación activa.
@@ -12,9 +13,16 @@ function AdminAsignadas() {
   const [asignaciones, setAsignaciones] = useState([])
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
+  const [toast, setToast] = useState(null)
 
   const [historial, setHistorial] = useState([])
   const [loadingHistorial, setLoadingHistorial] = useState(false)
+
+  // Estado del modal de rechazo
+  const [modalRechazo, setModalRechazo] = useState(null)
+  const [motivoRechazo, setMotivoRechazo] = useState('')
+  
+  
 
   // Filtros
   const [busqueda, setBusqueda] = useState('')
@@ -151,6 +159,50 @@ function AdminAsignadas() {
     useEffect(() => {
       setPaginaActual(1)
     }, [busqueda, muelle, tipoBarco, fechaSalida])
+
+
+
+  // Rechaza la solicitud y libera el espacio asignado
+  const rechazarSolicitud = async () => {
+    if (!motivoRechazo.trim()) {
+      setToast({ mensaje: 'Debes escribir el motivo del rechazo', tipo: 'error' })
+      return
+    }
+
+    if (motivoRechazo.trim().length < 10) {
+      setToast({ mensaje: 'El motivo debe tener al menos 10 caracteres', tipo: 'error' })
+      return
+    }
+
+    if (motivoRechazo.length > 500) {
+      setToast({ mensaje: 'El motivo no puede superar los 500 caracteres', tipo: 'warning' })
+      return
+    }
+
+    try {
+      const res = await fetchAuth(`/solicitudes/${modalRechazo.solicitud_id}/estado`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          estado: 'RECHAZADA',
+          motivo: motivoRechazo
+        })
+      })
+
+      const data = await res.json()
+
+      if (!data.ok) {
+        setToast({ mensaje: data.error || 'No se pudo rechazar', tipo: 'error' })
+        return
+      }
+
+      setModalRechazo(null)
+      setMotivoRechazo('')
+      setVerModal(null)
+      obtenerAsignaciones()
+    } catch (error) {
+      setToast({ mensaje: 'Error de conexión', tipo: 'error' })
+    }
+  }
 
   return (
     <div className="admin-asignadas-page">
@@ -519,6 +571,18 @@ function AdminAsignadas() {
                 >
                   Editar
                 </button>
+
+                <button
+                  type="button"
+                  className="btn-rechazar"
+                  onClick={() => {
+                    setVerModal(null)
+                    setModalRechazo(verModal)
+                  }}
+                >
+                  Rechazar
+                </button>
+
               </div>
 
               <button
@@ -532,6 +596,65 @@ function AdminAsignadas() {
 
           </div>
         </div>
+      )}
+
+      {/* Modal de Rechazo */}
+      {modalRechazo && (
+        <div className="solicitud-modal-overlay" onClick={() => setModalRechazo(null)}>
+          <div className="reject-modal" onClick={e => e.stopPropagation()}>
+            <h3>Rechazar solicitud</h3>
+
+            <p>Embarcación: <strong>{modalRechazo.nombre_bote}</strong></p>
+
+            <label>Motivo del rechazo <span style={{ color: '#c9a84c' }}>*</span></label>
+
+            <textarea
+              value={motivoRechazo}
+              onChange={(e) => setMotivoRechazo(e.target.value)}
+              placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
+              rows="5"
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px', marginBottom: '12px' }}>
+              {motivoRechazo.trim().length > 0 && motivoRechazo.trim().length < 10 && (
+                <span style={{ fontSize: '11px', color: '#c0392b' }}>Mínimo 10 caracteres</span>
+              )}
+              <span style={{ fontSize: '11px', color: motivoRechazo.length > 500 ? '#c0392b' : '#aaa', marginLeft: 'auto' }}>
+                {motivoRechazo.length}/500
+              </span>
+            </div>
+
+            <div className="reject-modal-actions">
+              <button
+                type="button"
+                className="btn-cancelar"
+                onClick={() => {
+                  setModalRechazo(null)
+                  setMotivoRechazo('')
+                }}
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="btn-rechazar"
+                onClick={rechazarSolicitud}
+              >
+                Confirmar rechazo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {toast && (
+        <Toast
+          mensaje={toast.mensaje}
+          tipo={toast.tipo}
+          onClose={() => setToast(null)}
+        />
       )}
 
     </div>

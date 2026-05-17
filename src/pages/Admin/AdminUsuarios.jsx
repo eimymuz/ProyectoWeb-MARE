@@ -95,13 +95,59 @@ function AdminUsuarios() {
     e.preventDefault()
     setError('')
 
-    if (!form.fullname || !form.email || !form.username || !form.rol) {
-      setError('Todos los campos son obligatorios')
+    // Validaciones de campos
+    if (!form.fullname.trim()) {
+      setError('El nombre completo es obligatorio')
+      return
+    }
+
+    if (form.fullname.trim().length < 3) {
+      setError('El nombre debe tener al menos 3 caracteres')
+      return
+    }
+
+    if (!form.email.trim()) {
+      setError('El correo es obligatorio')
+      return
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError('El correo no tiene un formato válido')
+      return
+    }
+
+    if (!form.username.trim()) {
+      setError('El usuario es obligatorio')
+      return
+    }
+
+    if (!/^[a-zA-Z0-9_]+$/.test(form.username.trim())) {
+      setError('El usuario solo puede contener letras, números y guión bajo')
+      return
+    }
+
+    if (form.username.trim().length < 3) {
+      setError('El usuario debe tener al menos 3 caracteres')
+      return
+    }
+
+    if (!form.rol) {
+      setError('El rol es obligatorio')
       return
     }
 
     if (modal === 'crear' && !form.password) {
       setError('La contraseña es obligatoria al crear un usuario')
+      return
+    }
+
+    if (modal === 'crear' && form.password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres')
+      return
+    }
+
+    if (modal === 'editar' && form.password && form.password.length < 6) {
+      setError('La nueva contraseña debe tener al menos 6 caracteres')
       return
     }
 

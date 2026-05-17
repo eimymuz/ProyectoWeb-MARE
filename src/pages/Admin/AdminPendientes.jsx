@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import API_URL from '../../services/api'
 import './AdminPendientes.css'
+import Toast from '../../components/admin/Toast'
+
 
 function AdminPendientes() {
   const navigate = useNavigate()
 
+  // Estados para solicitudes, carga, filtros, modales y toast
   const [solicitudes, setSolicitudes] = useState([])
   const [loading, setLoading] = useState(true)
   const [mostrarFiltros, setMostrarFiltros] = useState(false)
+  const [toast, setToast] = useState(null)
+
 
   const [busqueda, setBusqueda] = useState('')
   const [tipoBarco, setTipoBarco] = useState('')
@@ -525,6 +530,14 @@ function AdminPendientes() {
               onChange={(e) => setMotivo(e.target.value)}
               placeholder="Describe el motivo por el cual se rechaza esta solicitud..."
             />
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '3px' }}>
+              {motivo.trim().length > 0 && motivo.trim().length < 10 && (
+                <span style={{ fontSize: '11px', color: '#c0392b' }}>Mínimo 10 caracteres</span>
+              )}
+              <span style={{ fontSize: '11px', color: motivo.length > 500 ? '#c0392b' : '#aaa', marginLeft: 'auto' }}>
+                {motivo.length}/500
+              </span>
+            </div>
 
             <div className="reject-modal-actions">
               <button
@@ -543,7 +556,17 @@ function AdminPendientes() {
                 className="btn-reject"
                 onClick={() => {
                   if (!motivo.trim()) {
-                    alert('Debe escribir el motivo del rechazo')
+                    setToast({ mensaje: 'Debe escribir el motivo del rechazo', tipo: 'error' })
+                    return
+                  }
+
+                  if (motivo.trim().length < 10) {
+                    setToast({ mensaje: 'El motivo debe tener al menos 10 caracteres', tipo: 'error' })
+                    return
+                  }
+
+                  if (motivo.length > 500) {
+                    setToast({ mensaje: 'El motivo no puede superar los 500 caracteres', tipo: 'warning' })
                     return
                   }
 
@@ -556,10 +579,21 @@ function AdminPendientes() {
               >
                 Confirmar rechazo
               </button>
+
             </div>
           </div>
         </div>
       )}
+
+
+      {toast && (
+        <Toast
+          mensaje={toast.mensaje}
+          tipo={toast.tipo}
+          onClose={() => setToast(null)}
+        />
+      )}
+
     </div>
   )
 }
