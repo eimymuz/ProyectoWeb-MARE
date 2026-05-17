@@ -564,6 +564,15 @@ router.patch('/:id/estado', async (req, res) => {
       ]
     )
 
+
+    // Si se rechaza, desactiva todas las asignaciones activas
+    if (nuevoEstado === 'RECHAZADA') {
+      await pool.query(
+        `UPDATE asignacion SET activa = 0 WHERE solicitud_id = ? AND activa = 1`,
+        [id]
+      )
+    }
+
     res.json({
       ok: true,
       message: 'Estado actualizado correctamente'

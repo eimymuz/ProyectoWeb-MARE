@@ -511,3 +511,65 @@
         color: white;
         font-weight: 600;
       }
+
+
+
+/* Modal de rechazo */
+
+    .reject-modal {
+      background: white;
+      border-radius: 14px;
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .reject-modal h3 {
+      margin: 0 0 16px;
+      color: #251545;
+    }
+
+    .reject-modal label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #3d2b6b;
+      margin-bottom: 6px;
+    }
+
+    .reject-modal textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1.5px solid #dde4ed;
+      border-radius: 8px;
+      font-size: 13px;
+      resize: vertical;
+      outline: none;
+    }
+
+    .reject-modal textarea:focus {
+      border-color: #3d2b6b;
+    }
+
+    .reject-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .btn-rechazar {
+      background: rgba(192, 57, 43, 0.08);
+      color: #c0392b;
+      border: 1px solid rgba(192, 57, 43, 0.2);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-rechazar:hover {
+      background: rgba(192, 57, 43, 0.15);
+    }
